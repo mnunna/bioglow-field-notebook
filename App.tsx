@@ -3,7 +3,6 @@ import {
   Alert,
   Pressable,
   SafeAreaView,
-  Share,
   StyleSheet,
   Text,
   View,
@@ -19,7 +18,6 @@ import {
   saveEntries,
   saveGloveMode,
 } from './src/storage';
-import { entriesToCsv } from './src/export';
 import { buildResearchArchive } from './src/exportArchive';
 import {
   deleteEntryMedia,
@@ -230,27 +228,6 @@ export default function App() {
     ]);
   }, [commitEntries, enqueueEntryMutation]);
 
-  const shareCsv = useCallback(async () => {
-    const current = entriesRef.current;
-    if (current.length === 0) {
-      Alert.alert('Nothing to export', 'Save at least one entry first.');
-      return;
-    }
-    const csv = entriesToCsv(current);
-    try {
-      if (await Sharing.isAvailableAsync()) {
-        const file = new File(Paths.cache, 'bioglow-field-notes.csv');
-        file.write(csv);
-        await Sharing.shareAsync(file.uri, { mimeType: 'text/csv', dialogTitle: 'Export BioGlow field notes' });
-        return;
-      }
-      throw new Error('sharing unavailable');
-    } catch {
-      // Fallback: share the CSV as plain text.
-      await Share.share({ title: 'BioGlow field notes (CSV)', message: csv });
-    }
-  }, []);
-
   const shareResearchArchive = useCallback(async () => {
     const current = entriesRef.current;
     if (current.length === 0) {
@@ -276,18 +253,6 @@ export default function App() {
       );
     }
   }, []);
-
-  const chooseExport = useCallback(() => {
-    if (entriesRef.current.length === 0) {
-      Alert.alert('Nothing to export', 'Save at least one entry first.');
-      return;
-    }
-    Alert.alert('Export field notes', 'Choose a lightweight spreadsheet or a complete research archive.', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Spreadsheet CSV', onPress: () => void shareCsv() },
-      { text: 'Research ZIP', onPress: () => void shareResearchArchive() },
-    ]);
-  }, [shareCsv, shareResearchArchive]);
 
   const detailEntry =
     route.name === 'detail' ? entries.find((e) => e.id === route.entryId) : undefined;
@@ -343,7 +308,7 @@ export default function App() {
               onFilter={setFilter}
               onOpen={(e) => setRoute({ name: 'detail', entryId: e.id })}
               onToggleStar={toggleStar}
-              onExport={chooseExport}
+              onExport={shareResearchArchive}
             />
           ) : (
             <IdeasScreen />

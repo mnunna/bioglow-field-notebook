@@ -10,7 +10,7 @@ Roadmap placement is not a promise or release date. Move an item into **Now** on
 - Four searchable notebooks with filters, starring, detail view, and deletion.
 - Durable photo attachment, GPS tagging with accuracy, and voice-note recording/playback.
 - Editing for saved entries with safe media replacement and cleanup.
-- Spreadsheet CSV plus a complete research ZIP containing media and a Darwin Core-compatible CSV.
+- One complete research ZIP containing media, a spreadsheet CSV, and a Darwin Core-compatible CSV.
 - Versioned entry migration, awaited/serialized storage writes, and focused storage/export tests.
 - Rain / Glove Mode for larger outdoor controls.
 - Direct installation and operation on a physical iPhone.

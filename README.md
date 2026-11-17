@@ -23,8 +23,8 @@ backpacks are already heavy. This app runs on the phone they already carry:
 - **100% offline saving** on the device with versioned AsyncStorage records and
   app-owned media files — no account or signal needed
 - Edit, star, inspect and delete entries with their associated media
-- Export a lightweight **spreadsheet CSV** or a complete **research ZIP** containing
-  photos, audio, a readable CSV, and a Darwin Core-compatible occurrence CSV
+- Export one complete **research ZIP** containing photos, audio, a readable
+  spreadsheet CSV, and a Darwin Core-compatible occurrence CSV
 - **Rain / Glove Mode** — bigger buttons and text for wet hands
 - **Ideas tab** — V1 → V2 → V3 roadmap and the alternate ideas considered
   (voice pendant, e-ink tablet, QR tags, smartwatch)
@@ -156,7 +156,7 @@ Full step-by-step: see **STORE_SUBMISSION.md**.
 - Brightness uses a 1–5 selector instead of a continuous slider, to keep the app
   dependency-light and easy to tap with gloves.
 - Entries and their managed media live on one device. There is no cloud sync in V1
-  (that is the point — offline first); CSV and research ZIP exports are the explicit
-  ways to move data off the phone.
+  (that is the point — offline first); the complete research ZIP is the explicit way
+  to move data off the phone.
 - The placeholder app icon/splash in `assets/` should be replaced with final artwork
   before a store submission.

@@ -67,7 +67,7 @@ export function NotebookScreen({
         ))}
       </View>
 
-      <BigButton title="⬆️ Export / back up field notes" glove={glove} variant="ghost" onPress={onExport} />
+      <BigButton title="⬆️ Export complete research ZIP" glove={glove} variant="ghost" onPress={onExport} />
       <View style={{ height: 14 }} />
 
       {visible.length === 0 ? (
