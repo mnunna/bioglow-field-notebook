@@ -3,7 +3,7 @@ import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-nat
 import { LinearGradient } from 'expo-linear-gradient';
 import { NOTEBOOKS, TEMPLATES } from '../templates';
 import type { FieldEntry, NotebookKey, TemplateDef } from '../types';
-import { COLORS, GlossyCard, SectionTitle } from '../components/ui';
+import { BigButton, COLORS, GlossyCard, SectionTitle } from '../components/ui';
 
 /** One full glossy tile in the 2-column grid: big icon tile on top, title, tagline. */
 function Tile({
@@ -56,12 +56,20 @@ export function HomeScreen({
   onToggleGlove,
   onPickTemplate,
   onPickNotebook,
+  sampleEntryCount,
+  sampleDataPending,
+  onLoadSampleData,
+  onRemoveSampleData,
 }: {
   entries: FieldEntry[];
   glove: boolean;
   onToggleGlove: (v: boolean) => void;
   onPickTemplate: (t: TemplateDef) => void;
   onPickNotebook: (k: NotebookKey) => void;
+  sampleEntryCount: number;
+  sampleDataPending: boolean;
+  onLoadSampleData: () => void;
+  onRemoveSampleData: () => void;
 }) {
   const countFor = (k: NotebookKey) => entries.filter((e) => e.notebookKey === k).length;
   return (
@@ -123,6 +131,39 @@ export function HomeScreen({
           />
         ))}
       </View>
+
+      <SectionTitle>Testing</SectionTitle>
+      <GlossyCard>
+        <Text style={styles.testTitle}>🧪 Sample observations</Text>
+        <Text style={styles.muted}>
+          Load six clearly labeled sample entries with two synthetic photos and a sample voice note.
+          Resetting or removing them never changes your real field notes.
+        </Text>
+        <View style={styles.testButton}>
+          <BigButton
+            title={
+              sampleDataPending
+                ? 'Loading sample data…'
+                : sampleEntryCount > 0
+                  ? 'Reset sample data'
+                  : 'Add sample data'
+            }
+            glove={glove}
+            variant="ghost"
+            onPress={onLoadSampleData}
+            disabled={sampleDataPending}
+          />
+        </View>
+        {sampleEntryCount > 0 ? (
+          <BigButton
+            title={`Remove ${sampleEntryCount} sample entries`}
+            glove={glove}
+            variant="danger"
+            onPress={onRemoveSampleData}
+            disabled={sampleDataPending}
+          />
+        ) : null}
+      </GlossyCard>
       <View style={{ height: 24 }} />
     </ScrollView>
   );
@@ -165,6 +206,8 @@ const styles = StyleSheet.create({
   },
   gloveIconText: { fontSize: 40 },
   muted: { color: COLORS.muted, fontSize: 13, marginTop: 4, lineHeight: 18 },
+  testTitle: { color: COLORS.text, fontSize: 17, fontWeight: '800' },
+  testButton: { marginTop: 12, marginBottom: 8 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', marginHorizontal: -6 },
   tileOuter: { width: '50%', padding: 6 },
   pressed: { opacity: 0.85 },

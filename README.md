@@ -24,7 +24,11 @@ backpacks are already heavy. This app runs on the phone they already carry:
   app-owned media files — no account or signal needed
 - Edit, star, inspect and delete entries with their associated media
 - Export one complete **research ZIP** containing photos, audio, a readable
-  spreadsheet CSV, and a Darwin Core-compatible occurrence CSV
+  spreadsheet CSV, and a Darwin Core-compatible occurrence CSV. An unavailable
+  attachment from an older install is reported without blocking the rest of the export.
+- One-tap **sample data** adds six labeled observations, two synthetic photos, and
+  a sample voice note for repeatable testing; it can be reset or removed without
+  changing real field notes.
 - **Rain / Glove Mode** — bigger buttons and text for wet hands
 - **Ideas tab** — V1 → V2 → V3 roadmap and the alternate ideas considered
   (voice pendant, e-ink tablet, QR tags, smartwatch)
@@ -41,6 +45,9 @@ src/storage.ts              Awaited, serialized AsyncStorage load/save
 src/media.ts                Durable photo/audio files and cleanup
 src/export.ts               Spreadsheet and Darwin Core-compatible CSV builders
 src/exportArchive.ts        Self-contained research ZIP builder
+src/exportArchiveCore.ts    Tested archive policy for unavailable old attachments
+src/sampleData.ts           Clearly labeled sample observations for repeatable tests
+src/sampleMedia.ts          Bundled sample attachment setup and durable copying
 src/components/ui.tsx       GlossyCard, BigButton, Chip, shared colours
 src/screens/HomeScreen.tsx        Template + notebook picker, Rain/Glove toggle
 src/screens/EntryFormScreen.tsx   Guided form: GPS, photo, voice recording

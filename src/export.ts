@@ -20,13 +20,17 @@ function toCsv(columns: string[], rows: Record<string, unknown>[]): string {
 
 function detailsForEntry(entry: FieldEntry): string {
   const template = templateByKey(entry.templateKey);
-  return template.fields
+  const knownFieldKeys = new Set(template.fields.map((field) => field.key));
+  const templateDetails = template.fields
     .map((field) => {
       const value = entry.values[field.key];
       return value ? `${field.label}: ${value}` : '';
     })
-    .filter(Boolean)
-    .join('; ');
+    .filter(Boolean);
+  const legacyDetails = Object.entries(entry.values)
+    .filter(([key, value]) => !knownFieldKeys.has(key) && value.length > 0)
+    .map(([key, value]) => `${key}: ${value}`);
+  return [...templateDetails, ...legacyDetails].join('; ');
 }
 
 function extensionFromUri(uri: string, fallback: string): string {

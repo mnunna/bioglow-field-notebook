@@ -27,17 +27,19 @@ test('migrates an original unversioned entry without losing its media', () => {
   assert.equal(migrated.voiceUri, 'file:///old-voice.m4a');
 });
 
-test('rejects malformed persisted entries', () => {
+test('rejects records without identity fields but preserves unknown old categories', () => {
   assert.equal(migrateFieldEntry(null), null);
   assert.equal(migrateFieldEntry({ id: 'missing-most-fields' }), null);
-  assert.equal(
-    migrateFieldEntry({
-      id: 'bad-template',
-      title: 'Bad',
-      createdAt: '2026-01-01T00:00:00.000Z',
-      templateKey: 'unknown',
-      notebookKey: 'journal',
-    }),
-    null,
-  );
+  const migrated = migrateFieldEntry({
+    id: 'old-template',
+    title: 'Old category',
+    createdAt: '2026-01-01T00:00:00.000Z',
+    templateKey: 'retired-template',
+    notebookKey: 'retired-notebook',
+    notes: 'Do not discard this observation after an update.',
+  });
+  assert.ok(migrated);
+  assert.equal(migrated.templateKey, 'general');
+  assert.equal(migrated.notebookKey, 'journal');
+  assert.equal(migrated.notes, 'Do not discard this observation after an update.');
 });

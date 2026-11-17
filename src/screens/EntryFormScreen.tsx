@@ -2,6 +2,8 @@ import React, { useRef, useState } from 'react';
 import {
   Alert,
   Image,
+  Keyboard,
+  Linking,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -56,6 +58,8 @@ export function EntryFormScreen({
   const [voiceUri, setVoiceUri] = useState<string | null>(initialEntry?.voiceUri ?? null);
   const [recording, setRecording] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [photoActionPending, setPhotoActionPending] = useState(false);
+  const photoActionPendingRef = useRef(false);
   const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const audioPlayer = useAudioPlayer(voiceUri);
 
@@ -84,22 +88,51 @@ export function EntryFormScreen({
   }
 
   async function attachPhoto(fromCamera: boolean) {
+    if (photoActionPendingRef.current) return;
+
+    photoActionPendingRef.current = true;
+    setPhotoActionPending(true);
+    Keyboard.dismiss();
+
     try {
-      const perm = fromCamera
-        ? await ImagePicker.requestCameraPermissionsAsync()
-        : await ImagePicker.requestMediaLibraryPermissionsAsync();
+      let perm = fromCamera
+        ? await ImagePicker.getCameraPermissionsAsync()
+        : await ImagePicker.getMediaLibraryPermissionsAsync();
+
+      if (!perm.granted && perm.canAskAgain) {
+        perm = fromCamera
+          ? await ImagePicker.requestCameraPermissionsAsync()
+          : await ImagePicker.requestMediaLibraryPermissionsAsync();
+      }
+
       if (!perm.granted) {
-        Alert.alert('Photo off', 'Permission was not given, so no photo was attached.');
+        const source = fromCamera ? 'camera' : 'photo library';
+        const buttons = perm.canAskAgain
+          ? undefined
+          : [
+              { text: 'Not now', style: 'cancel' as const },
+              { text: 'Open Settings', onPress: () => void Linking.openSettings() },
+            ];
+        Alert.alert(
+          'Photo access is off',
+          perm.canAskAgain
+            ? `Permission to use the ${source} was not given, so no photo was attached.`
+            : `Enable ${source} access for BioGlow in Settings, then try again.`,
+          buttons,
+        );
         return;
       }
       const result = fromCamera
-        ? await ImagePicker.launchCameraAsync({ quality: 0.7 })
-        : await ImagePicker.launchImageLibraryAsync({ quality: 0.7 });
+        ? await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.7 })
+        : await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.7 });
       if (!result.canceled && result.assets[0]) {
         setPhotoUri(result.assets[0].uri);
       }
     } catch {
       Alert.alert('Photo unavailable', 'The camera / photo library did not open on this device.');
+    } finally {
+      photoActionPendingRef.current = false;
+      setPhotoActionPending(false);
     }
   }
 
@@ -192,7 +225,7 @@ export function EntryFormScreen({
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.wrap}>
+    <ScrollView contentContainerStyle={styles.wrap} keyboardShouldPersistTaps="handled">
       <Text style={styles.heading}>
         {template.icon} {initialEntry ? `Edit ${template.title}` : template.title}
       </Text>
@@ -296,10 +329,22 @@ export function EntryFormScreen({
       <Text style={[styles.label, { fontSize: labelSize }]}>Photo</Text>
       <View style={styles.buttonRow}>
         <View style={{ flex: 1, marginRight: 8 }}>
-          <BigButton title="📷 Take photo" glove={glove} variant="ghost" onPress={() => attachPhoto(true)} />
+          <BigButton
+            title={photoActionPending ? 'Opening…' : '📷 Take photo'}
+            glove={glove}
+            variant="ghost"
+            onPress={() => attachPhoto(true)}
+            disabled={photoActionPending}
+          />
         </View>
         <View style={{ flex: 1 }}>
-          <BigButton title="🖼️ Pick photo" glove={glove} variant="ghost" onPress={() => attachPhoto(false)} />
+          <BigButton
+            title={photoActionPending ? 'Opening…' : '🖼️ Pick photo'}
+            glove={glove}
+            variant="ghost"
+            onPress={() => attachPhoto(false)}
+            disabled={photoActionPending}
+          />
         </View>
       </View>
       {photoUri ? <Image source={{ uri: photoUri }} style={styles.photo} /> : null}

@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { strFromU8, unzipSync } from 'fflate';
 import { entriesToCsv, entriesToDarwinCoreCsv, mediaArchivePath } from '../src/export';
+import { assembleResearchArchive } from '../src/exportArchiveCore';
 import type { FieldEntry } from '../src/types';
 
 function entry(overrides: Partial<FieldEntry> = {}): FieldEntry {
@@ -50,7 +52,42 @@ test('Darwin Core export keeps stable identifiers and GPS uncertainty', () => {
   assert.match(csv, /media\/entry-1-photo\.jpeg \| media\/entry-1-voice\.m4a/);
 });
 
+test('friendly export retains values from a retired template field', () => {
+  const csv = entriesToCsv([
+    entry({
+      templateKey: 'general',
+      notebookKey: 'journal',
+      values: { retiredSurveyField: 'Legacy measurement' },
+    }),
+  ]);
+
+  assert.match(csv, /retiredSurveyField: Legacy measurement/);
+});
+
 test('media archive names are stable and do not expose device paths', () => {
   assert.equal(mediaArchivePath(entry(), 'photo'), 'media/entry-1-photo.jpeg');
   assert.equal(mediaArchivePath(entry(), 'voice'), 'media/entry-1-voice.m4a');
+});
+
+test('an expired old attachment does not prevent observation export', async () => {
+  const oldEntry = entry({
+    id: 'old-entry',
+    title: 'Old observation survives',
+    photoUri: 'file:///expired-photo.jpg',
+    voiceUri: 'file:///available-voice.m4a',
+  });
+  const archive = await assembleResearchArchive([oldEntry], async (uri) => {
+    if (uri.includes('expired')) throw new Error('File is gone');
+    return new Uint8Array([1, 2, 3]);
+  });
+  const files = unzipSync(archive.bytes);
+
+  assert.equal(archive.missingMedia.length, 1);
+  assert.equal(archive.missingMedia[0]?.kind, 'photo');
+  assert.ok(files['bioglow-field-notes.csv']);
+  assert.match(strFromU8(files['bioglow-field-notes.csv']), /Old observation survives/);
+  assert.equal(files['media/old-entry-photo.jpg'], undefined);
+  assert.deepEqual(files['media/old-entry-voice.m4a'], new Uint8Array([1, 2, 3]));
+  assert.match(strFromU8(files['missing-attachments.txt']), /old-entry.*photo/);
+  assert.doesNotMatch(strFromU8(files['missing-attachments.txt']), /file:\/\//);
 });

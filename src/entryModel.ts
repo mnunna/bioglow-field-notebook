@@ -13,6 +13,15 @@ const TEMPLATE_KEYS = new Set<TemplateKey>([
 
 const NOTEBOOK_KEYS = new Set<NotebookKey>(['species', 'bioglow', 'carbon', 'journal']);
 
+const DEFAULT_NOTEBOOK: Record<TemplateKey, NotebookKey> = {
+  plant: 'species',
+  animal: 'species',
+  bioglow: 'bioglow',
+  carbon: 'carbon',
+  quick: 'journal',
+  general: 'journal',
+};
+
 function stringValue(value: unknown, fallback = ''): string {
   return typeof value === 'string' ? value : fallback;
 }
@@ -42,26 +51,24 @@ export function migrateFieldEntry(value: unknown): FieldEntry | null {
   const id = stringValue(raw.id);
   const title = stringValue(raw.title);
   const createdAt = stringValue(raw.createdAt);
-  const templateKey = raw.templateKey;
-  const notebookKey = raw.notebookKey;
+  const templateKey =
+    typeof raw.templateKey === 'string' && TEMPLATE_KEYS.has(raw.templateKey as TemplateKey)
+      ? raw.templateKey as TemplateKey
+      : 'general';
+  const notebookKey =
+    typeof raw.notebookKey === 'string' && NOTEBOOK_KEYS.has(raw.notebookKey as NotebookKey)
+      ? raw.notebookKey as NotebookKey
+      : DEFAULT_NOTEBOOK[templateKey];
 
-  if (
-    !id ||
-    !title ||
-    !createdAt ||
-    typeof templateKey !== 'string' ||
-    !TEMPLATE_KEYS.has(templateKey as TemplateKey) ||
-    typeof notebookKey !== 'string' ||
-    !NOTEBOOK_KEYS.has(notebookKey as NotebookKey)
-  ) {
+  if (!id || !title || !createdAt) {
     return null;
   }
 
   return {
     schemaVersion: FIELD_ENTRY_SCHEMA_VERSION,
     id,
-    templateKey: templateKey as TemplateKey,
-    notebookKey: notebookKey as NotebookKey,
+    templateKey,
+    notebookKey,
     title,
     values: entryValues(raw.values),
     notes: stringValue(raw.notes),

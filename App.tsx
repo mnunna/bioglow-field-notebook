@@ -33,6 +33,8 @@ import { IdeasScreen } from './src/screens/IdeasScreen';
 import { COLORS } from './src/components/ui';
 import { RainGloveOverlay } from './src/components/RainGloveOverlay';
 import { templateByKey } from './src/templates';
+import { isSampleEntry } from './src/sampleData';
+import { createSampleEntriesWithMedia } from './src/sampleMedia';
 
 type Route =
   | { name: 'tabs' }
@@ -54,6 +56,8 @@ export default function App() {
   const [route, setRoute] = useState<Route>({ name: 'tabs' });
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<NotebookKey | 'all'>('all');
+  const [sampleDataPending, setSampleDataPending] = useState(false);
+  const sampleDataPendingRef = useRef(false);
   const [showGloveAnim, setShowGloveAnim] = useState(false);
   const gloveAnimTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -228,6 +232,90 @@ export default function App() {
     ]);
   }, [commitEntries, enqueueEntryMutation]);
 
+  const loadSampleData = useCallback(() => {
+    if (sampleDataPendingRef.current) return;
+    sampleDataPendingRef.current = true;
+    setSampleDataPending(true);
+
+    void enqueueEntryMutation(async () => {
+      const current = entriesRef.current;
+      const oldSamples = current.filter(isSampleEntry);
+      let samples: FieldEntry[] = [];
+      try {
+        samples = await createSampleEntriesWithMedia();
+        const next = [...samples, ...current.filter((entry) => !isSampleEntry(entry))];
+        await saveEntries(next);
+        commitEntries(next);
+
+        for (const entry of oldSamples) {
+          try {
+            deleteEntryMedia(entry);
+          } catch {
+            // The refreshed samples are saved; an older sample file can be cleaned later.
+          }
+        }
+
+        setFilter('all');
+        setSearch('');
+        setTab('notebook');
+      } catch (error) {
+        for (const entry of samples) {
+          try {
+            deleteEntryMedia(entry);
+          } catch {
+            // Best-effort rollback of new sample media.
+          }
+        }
+        Alert.alert(
+          'Sample data not added',
+          error instanceof Error ? error.message : 'The sample entries could not be saved.',
+        );
+      } finally {
+        sampleDataPendingRef.current = false;
+        setSampleDataPending(false);
+      }
+    });
+  }, [commitEntries, enqueueEntryMutation]);
+
+  const removeSampleData = useCallback(() => {
+    const sampleCount = entriesRef.current.filter(isSampleEntry).length;
+    if (sampleCount === 0) return;
+
+    Alert.alert(
+      'Remove sample data?',
+      `This removes ${sampleCount} sample entries and their bundled attachments. Your real field notes will not be changed.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Remove samples',
+          style: 'destructive',
+          onPress: () => {
+            void enqueueEntryMutation(async () => {
+              const samples = entriesRef.current.filter(isSampleEntry);
+              const next = entriesRef.current.filter((entry) => !isSampleEntry(entry));
+              try {
+                await saveEntries(next);
+                commitEntries(next);
+                for (const entry of samples) {
+                  try {
+                    deleteEntryMedia(entry);
+                  } catch {
+                    // Sample records are gone; an orphaned attachment can be cleaned later.
+                  }
+                }
+              } catch (error) {
+                Alert.alert(
+                  'Sample data not removed',
+                  error instanceof Error ? error.message : 'Try again.',
+                );
+              }
+            });
+          },
+        },
+      ],
+    );
+  }, [commitEntries, enqueueEntryMutation]);
+
   const shareResearchArchive = useCallback(async () => {
     const current = entriesRef.current;
     if (current.length === 0) {
@@ -241,11 +329,17 @@ export default function App() {
       }
       const archive = await buildResearchArchive(current);
       const file = new File(Paths.cache, 'bioglow-research-export.zip');
-      file.write(archive);
+      file.write(archive.bytes);
       await Sharing.shareAsync(file.uri, {
         mimeType: 'application/zip',
         dialogTitle: 'Export BioGlow research archive',
       });
+      if (archive.missingMedia.length > 0) {
+        Alert.alert(
+          'Exported with missing attachments',
+          `${archive.missingMedia.length} older attachment${archive.missingMedia.length === 1 ? ' was' : 's were'} no longer available. All observation text and remaining media were exported. See missing-attachments.txt in the ZIP.`,
+        );
+      }
     } catch (error) {
       Alert.alert(
         'Export failed',
@@ -297,6 +391,10 @@ export default function App() {
                 setFilter(k);
                 setTab('notebook');
               }}
+              sampleEntryCount={entries.filter(isSampleEntry).length}
+              sampleDataPending={sampleDataPending}
+              onLoadSampleData={loadSampleData}
+              onRemoveSampleData={removeSampleData}
             />
           ) : tab === 'notebook' ? (
             <NotebookScreen
