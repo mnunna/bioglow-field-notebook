@@ -51,6 +51,13 @@
           "photosPermission": "Eco Note lets you attach photos of field findings to your notes."
         }
       ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Eco Note uses the camera to photograph field findings.",
+          "recordAudioAndroid": false
+        }
+      ],
       "expo-audio",
       [
         "expo-build-properties",

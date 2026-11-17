@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import * as Location from 'expo-location';
 import * as ImagePicker from 'expo-image-picker';
+import { Camera } from 'expo-camera';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
   RecordingPresets,
@@ -27,6 +28,7 @@ import {
 import { GLOW_COLOURS } from '../templates';
 import type { FieldEntry, TemplateDef } from '../types';
 import { BigButton, COLORS, Chip, GlossyCard } from '../components/ui';
+import { CameraCaptureModal } from '../components/CameraCaptureModal';
 import { FIELD_ENTRY_SCHEMA_VERSION } from '../entryModel';
 import { newId } from '../storage';
 import { resolveMediaUri } from '../media';
@@ -65,6 +67,7 @@ export function EntryFormScreen({
   const [recording, setRecording] = useState(false);
   const [saving, setSaving] = useState(false);
   const [photoActionPending, setPhotoActionPending] = useState(false);
+  const [cameraOpen, setCameraOpen] = useState(false);
   const photoActionPendingRef = useRef(false);
   const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const audioPlayer = useAudioPlayer(voiceUri ? resolveMediaUri(voiceUri) : null);
@@ -102,7 +105,7 @@ export function EntryFormScreen({
     }
   }
 
-  async function attachPhoto(fromCamera: boolean) {
+  async function takePhoto() {
     if (photoActionPendingRef.current) return;
 
     photoActionPendingRef.current = true;
@@ -110,18 +113,13 @@ export function EntryFormScreen({
     Keyboard.dismiss();
 
     try {
-      let perm = fromCamera
-        ? await ImagePicker.getCameraPermissionsAsync()
-        : await ImagePicker.getMediaLibraryPermissionsAsync();
+      let perm = await Camera.getCameraPermissionsAsync();
 
       if (!perm.granted && perm.canAskAgain) {
-        perm = fromCamera
-          ? await ImagePicker.requestCameraPermissionsAsync()
-          : await ImagePicker.requestMediaLibraryPermissionsAsync();
+        perm = await Camera.requestCameraPermissionsAsync();
       }
 
       if (!perm.granted) {
-        const source = fromCamera ? 'camera' : 'photo library';
         const buttons = perm.canAskAgain
           ? undefined
           : [
@@ -131,20 +129,61 @@ export function EntryFormScreen({
         Alert.alert(
           'Photo access is off',
           perm.canAskAgain
-            ? `Permission to use the ${source} was not given, so no photo was attached.`
-            : `Enable ${source} access for Eco Note in Settings, then try again.`,
+            ? 'Permission to use the camera was not given, so no photo was attached.'
+            : 'Enable camera access for Eco Note in Settings, then try again.',
           buttons,
         );
         return;
       }
-      const result = fromCamera
-        ? await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.7 })
-        : await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.7 });
+      setCameraOpen(true);
+    } catch {
+      Alert.alert('Camera unavailable', 'The camera did not open on this device.');
+    } finally {
+      photoActionPendingRef.current = false;
+      setPhotoActionPending(false);
+    }
+  }
+
+  async function pickPhoto() {
+    if (photoActionPendingRef.current) return;
+
+    photoActionPendingRef.current = true;
+    setPhotoActionPending(true);
+    Keyboard.dismiss();
+
+    try {
+      let perm = await ImagePicker.getMediaLibraryPermissionsAsync();
+
+      if (!perm.granted && perm.canAskAgain) {
+        perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      }
+
+      if (!perm.granted) {
+        const buttons = perm.canAskAgain
+          ? undefined
+          : [
+              { text: 'Not now', style: 'cancel' as const },
+              { text: 'Open Settings', onPress: () => void Linking.openSettings() },
+            ];
+        Alert.alert(
+          'Photo access is off',
+          perm.canAskAgain
+            ? 'Permission to use the photo library was not given, so no photo was attached.'
+            : 'Enable photo library access for Eco Note in Settings, then try again.',
+          buttons,
+        );
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        quality: 0.7,
+      });
       if (!result.canceled && result.assets[0]) {
         setPhotoUri(result.assets[0].uri);
       }
     } catch {
-      Alert.alert('Photo unavailable', 'The camera / photo library did not open on this device.');
+      Alert.alert('Photo unavailable', 'The photo library did not open on this device.');
     } finally {
       photoActionPendingRef.current = false;
       setPhotoActionPending(false);
@@ -365,7 +404,7 @@ export function EntryFormScreen({
             title={photoActionPending ? 'Opening…' : '📷 Take photo'}
             glove={glove}
             variant="ghost"
-            onPress={() => attachPhoto(true)}
+            onPress={takePhoto}
             disabled={photoActionPending}
           />
         </View>
@@ -374,7 +413,7 @@ export function EntryFormScreen({
             title={photoActionPending ? 'Opening…' : '🖼️ Pick photo'}
             glove={glove}
             variant="ghost"
-            onPress={() => attachPhoto(false)}
+            onPress={pickPhoto}
             disabled={photoActionPending}
           />
         </View>
@@ -423,6 +462,15 @@ export function EntryFormScreen({
       </GlossyCard>
       <View style={{ height: 28 }} />
       </ScrollView>
+      <CameraCaptureModal
+        visible={cameraOpen}
+        glove={glove}
+        onClose={() => setCameraOpen(false)}
+        onCapture={(uri) => {
+          setPhotoUri(uri);
+          setCameraOpen(false);
+        }}
+      />
     </KeyboardAvoidingView>
   );
 }

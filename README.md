@@ -18,7 +18,7 @@ backpacks are already heavy. This app runs on the phone they already carry:
 - **4 notebooks** — Species, BioGlow, Carbon, Daily Field Journal — with live counts,
   search and filters
 - **Auto date/time**, **GPS location + accuracy** (with permission fallback to typing
-  the place), **durable photo attachments** (camera or library), and **real voice-note
+  the place), **durable photo attachments** (in-app camera preview or library), and **real voice-note
   recording and playback** (expo-audio — it records audio; it does *not* fake speech-to-text)
 - **100% offline saving** on the device with versioned AsyncStorage records and
   app-owned media files addressed by stable relative references, so normal app
