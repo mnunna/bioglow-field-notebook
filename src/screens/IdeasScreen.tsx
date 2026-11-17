@@ -10,8 +10,9 @@ const ROADMAP: { version: string; title: string; points: string[]; gradient: [st
     points: [
       '6 guided templates (plant, animal/reptile, BioGlow, carbon, quick capture, general)',
       '4 notebooks with counts, search and filters',
-      'Photo, GPS, real voice-note recording — all stored offline on the phone',
-      'Rain / Glove Mode, CSV export from the Notebook tab',
+      'Durable photo, GPS accuracy and playable voice notes — all stored offline on the phone',
+      'Edit saved entries; export a spreadsheet or complete research ZIP with Darwin Core CSV',
+      'Rain / Glove Mode for larger outdoor controls',
     ],
   },
   {

@@ -42,6 +42,7 @@ export interface NotebookDef {
 }
 
 export interface FieldEntry {
+  schemaVersion: 2;
   id: string;
   templateKey: TemplateKey;
   notebookKey: NotebookKey;
@@ -51,12 +52,15 @@ export interface FieldEntry {
   notes: string;
   latitude: number | null;
   longitude: number | null;
+  /** Horizontal GPS uncertainty reported by the device, in metres. */
+  horizontalAccuracy: number | null;
   locationLabel: string;
   photoUri: string | null;
-  /** Local file URI of a recorded voice note (expo-av), or null */
+  /** Local file URI of a recorded voice note (expo-audio), or null */
   voiceUri: string | null;
   starred: boolean;
   createdAt: string; // ISO string
+  updatedAt: string; // ISO string
 }
 
 export type TabKey = 'home' | 'notebook' | 'ideas';

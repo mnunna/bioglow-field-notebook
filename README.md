@@ -17,11 +17,14 @@ backpacks are already heavy. This app runs on the phone they already carry:
   Voice Capture, General Field Note
 - **4 notebooks** — Species, BioGlow, Carbon, Daily Field Journal — with live counts,
   search and filters
-- **Auto date/time**, **GPS location button** (with permission fallback to typing the
-  place), **photo attach** (camera or library), **real voice-note recording** and
-  playback (expo-audio — it records audio; it does *not* fake speech-to-text)
-- **100% offline saving** on the device with AsyncStorage — no account, no signal needed
-- Star entries, entry detail view, delete, and **CSV export** (share sheet)
+- **Auto date/time**, **GPS location + accuracy** (with permission fallback to typing
+  the place), **durable photo attachments** (camera or library), and **real voice-note
+  recording and playback** (expo-audio — it records audio; it does *not* fake speech-to-text)
+- **100% offline saving** on the device with versioned AsyncStorage records and
+  app-owned media files — no account or signal needed
+- Edit, star, inspect and delete entries with their associated media
+- Export a lightweight **spreadsheet CSV** or a complete **research ZIP** containing
+  photos, audio, a readable CSV, and a Darwin Core-compatible occurrence CSV
 - **Rain / Glove Mode** — bigger buttons and text for wet hands
 - **Ideas tab** — V1 → V2 → V3 roadmap and the alternate ideas considered
   (voice pendant, e-ink tablet, QR tags, smartwatch)
@@ -33,7 +36,11 @@ backpacks are already heavy. This app runs on the phone they already carry:
 App.tsx                     Navigation (bottom tabs + form/detail routes) and app state
 src/types.ts                Entry, template and notebook types
 src/templates.ts            All 6 templates (guided fields) and 4 notebook definitions
-src/storage.ts              AsyncStorage load/save + CSV builder
+src/entryModel.ts           Persisted-entry schema and migration
+src/storage.ts              Awaited, serialized AsyncStorage load/save
+src/media.ts                Durable photo/audio files and cleanup
+src/export.ts               Spreadsheet and Darwin Core-compatible CSV builders
+src/exportArchive.ts        Self-contained research ZIP builder
 src/components/ui.tsx       GlossyCard, BigButton, Chip, shared colours
 src/screens/HomeScreen.tsx        Template + notebook picker, Rain/Glove toggle
 src/screens/EntryFormScreen.tsx   Guided form: GPS, photo, voice recording
@@ -60,10 +67,11 @@ npx expo start
    Expo Go app (Android).
 3. The app opens on the phone. Shake the phone / tap the Expo Go menu for dev options.
 
-Type-check at any time:
+Run the automated checks at any time:
 
 ```bash
 npm run typecheck   # tsc --noEmit
+npm test            # storage migration and export checks
 ```
 
 ## Install directly on an iPhone with Xcode
@@ -143,11 +151,12 @@ Full step-by-step: see **STORE_SUBMISSION.md**.
 
 ## Known V1 choices / limits
 
-- Voice notes are real audio recordings stored on the phone (expo-av). There is no
+- Voice notes are real audio recordings stored on the phone (expo-audio). There is no
   speech-to-text in V1 — that is deliberately listed as a V2 item, not faked.
 - Brightness uses a 1–5 selector instead of a continuous slider, to keep the app
   dependency-light and easy to tap with gloves.
-- Entries live in AsyncStorage on one device. There is no cloud sync in V1 (that is
-  the point — offline first); CSV export is the way to move data off the phone.
+- Entries and their managed media live on one device. There is no cloud sync in V1
+  (that is the point — offline first); CSV and research ZIP exports are the explicit
+  ways to move data off the phone.
 - The placeholder app icon/splash in `assets/` should be replaced with final artwork
   before a store submission.

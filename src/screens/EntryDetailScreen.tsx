@@ -1,5 +1,6 @@
 import React from 'react';
-import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useAudioPlayer } from 'expo-audio';
 import { notebookByKey, templateByKey } from '../templates';
 import type { FieldEntry } from '../types';
 import { BigButton, COLORS, GlossyCard } from '../components/ui';
@@ -8,17 +9,30 @@ export function EntryDetailScreen({
   entry,
   glove,
   onBack,
+  onEdit,
   onToggleStar,
   onDelete,
 }: {
   entry: FieldEntry;
   glove: boolean;
   onBack: () => void;
+  onEdit: (e: FieldEntry) => void;
   onToggleStar: (e: FieldEntry) => void;
   onDelete: (e: FieldEntry) => void;
 }) {
   const template = templateByKey(entry.templateKey);
   const notebook = notebookByKey(entry.notebookKey);
+  const audioPlayer = useAudioPlayer(entry.voiceUri);
+
+  async function playVoice() {
+    if (!entry.voiceUri) return;
+    try {
+      await audioPlayer.seekTo(0);
+      audioPlayer.play();
+    } catch {
+      Alert.alert('Playback unavailable', 'This voice note could not be played.');
+    }
+  }
   return (
     <ScrollView contentContainerStyle={styles.wrap}>
       <Text style={styles.heading}>
@@ -54,6 +68,7 @@ export function EntryDetailScreen({
             <Text style={styles.label}>GPS</Text>
             <Text style={styles.value}>
               {entry.latitude.toFixed(5)}, {entry.longitude.toFixed(5)}
+              {entry.horizontalAccuracy != null ? ` · ±${Math.round(entry.horizontalAccuracy)} m` : ''}
             </Text>
           </View>
         ) : null}
@@ -72,6 +87,14 @@ export function EntryDetailScreen({
       </GlossyCard>
 
       <View style={{ height: 16 }} />
+      {entry.voiceUri ? (
+        <>
+          <BigButton title="▶️ Play voice note" glove={glove} variant="ghost" onPress={playVoice} />
+          <View style={{ height: 10 }} />
+        </>
+      ) : null}
+      <BigButton title="✏️ Edit this entry" glove={glove} variant="ghost" onPress={() => onEdit(entry)} />
+      <View style={{ height: 10 }} />
       <BigButton
         title={entry.starred ? '★ Starred — tap to unstar' : '☆ Star this entry'}
         glove={glove}

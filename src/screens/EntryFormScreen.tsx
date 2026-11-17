@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Alert,
   Image,
@@ -21,27 +21,41 @@ import {
 import { GLOW_COLOURS } from '../templates';
 import type { FieldEntry, TemplateDef } from '../types';
 import { BigButton, COLORS, Chip, GlossyCard } from '../components/ui';
+import { FIELD_ENTRY_SCHEMA_VERSION } from '../entryModel';
 import { newId } from '../storage';
 
 export function EntryFormScreen({
   template,
+  initialEntry,
   glove,
   onSave,
   onCancel,
 }: {
   template: TemplateDef;
+  initialEntry?: FieldEntry;
   glove: boolean;
-  onSave: (entry: FieldEntry) => void;
+  onSave: (entry: FieldEntry) => Promise<void>;
   onCancel: () => void;
 }) {
-  const [title, setTitle] = useState('');
-  const [values, setValues] = useState<Record<string, string>>({ brightness: '3' });
-  const [notes, setNotes] = useState('');
-  const [coords, setCoords] = useState<{ latitude: number; longitude: number } | null>(null);
-  const [locationLabel, setLocationLabel] = useState('');
-  const [photoUri, setPhotoUri] = useState<string | null>(null);
-  const [voiceUri, setVoiceUri] = useState<string | null>(null);
+  const entryId = useRef(initialEntry?.id ?? newId()).current;
+  const [title, setTitle] = useState(initialEntry?.title ?? '');
+  const [values, setValues] = useState<Record<string, string>>(
+    initialEntry?.values ?? (template.fields.some((field) => field.type === 'brightness') ? { brightness: '3' } : {}),
+  );
+  const [notes, setNotes] = useState(initialEntry?.notes ?? '');
+  const [coords, setCoords] = useState<{ latitude: number; longitude: number } | null>(
+    initialEntry?.latitude != null && initialEntry.longitude != null
+      ? { latitude: initialEntry.latitude, longitude: initialEntry.longitude }
+      : null,
+  );
+  const [horizontalAccuracy, setHorizontalAccuracy] = useState<number | null>(
+    initialEntry?.horizontalAccuracy ?? null,
+  );
+  const [locationLabel, setLocationLabel] = useState(initialEntry?.locationLabel ?? '');
+  const [photoUri, setPhotoUri] = useState<string | null>(initialEntry?.photoUri ?? null);
+  const [voiceUri, setVoiceUri] = useState<string | null>(initialEntry?.voiceUri ?? null);
   const [recording, setRecording] = useState(false);
+  const [saving, setSaving] = useState(false);
   const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const audioPlayer = useAudioPlayer(voiceUri);
 
@@ -58,6 +72,7 @@ export function EntryFormScreen({
       }
       const pos = await Location.getCurrentPositionAsync({});
       setCoords({ latitude: pos.coords.latitude, longitude: pos.coords.longitude });
+      setHorizontalAccuracy(pos.coords.accuracy);
       if (!locationLabel) {
         setLocationLabel(
           `${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`,
@@ -122,33 +137,64 @@ export function EntryFormScreen({
     }
   }
 
-  function save() {
+  async function save() {
     const trimmed = title.trim();
     if (!trimmed) {
       Alert.alert('Add a title', 'Give this finding a short title so you can find it later.');
       return;
     }
-    onSave({
-      id: newId(),
-      templateKey: template.key,
-      notebookKey: template.defaultNotebook,
-      title: trimmed,
-      values,
-      notes: notes.trim(),
-      latitude: coords?.latitude ?? null,
-      longitude: coords?.longitude ?? null,
-      locationLabel: locationLabel.trim(),
-      photoUri,
-      voiceUri,
-      starred: false,
-      createdAt: new Date().toISOString(),
-    });
+    if (recording) {
+      Alert.alert('Stop the recording first', 'Finish the voice note before saving this entry.');
+      return;
+    }
+    const now = new Date().toISOString();
+    setSaving(true);
+    try {
+      await onSave({
+        schemaVersion: FIELD_ENTRY_SCHEMA_VERSION,
+        id: entryId,
+        templateKey: template.key,
+        notebookKey: initialEntry?.notebookKey ?? template.defaultNotebook,
+        title: trimmed,
+        values,
+        notes: notes.trim(),
+        latitude: coords?.latitude ?? null,
+        longitude: coords?.longitude ?? null,
+        horizontalAccuracy,
+        locationLabel: locationLabel.trim(),
+        photoUri,
+        voiceUri,
+        starred: initialEntry?.starred ?? false,
+        createdAt: initialEntry?.createdAt ?? now,
+        updatedAt: now,
+      });
+    } catch (error) {
+      Alert.alert(
+        'Not saved',
+        error instanceof Error ? error.message : 'This entry could not be saved. Try again.',
+      );
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function cancel() {
+    if (recording) {
+      try {
+        await audioRecorder.stop();
+        await setAudioModeAsync({ allowsRecording: false, playsInSilentMode: true });
+      } catch {
+        // The form is closing; there is no saved recording to recover here.
+      }
+      setRecording(false);
+    }
+    onCancel();
   }
 
   return (
     <ScrollView contentContainerStyle={styles.wrap}>
       <Text style={styles.heading}>
-        {template.icon} {template.title}
+        {template.icon} {initialEntry ? `Edit ${template.title}` : template.title}
       </Text>
       <Text style={styles.auto}>
         🕒 {new Date().toLocaleString()} · auto-filled, saved offline on this phone
@@ -236,6 +282,7 @@ export function EntryFormScreen({
       {coords ? (
         <Text style={styles.okText}>
           GPS saved: {coords.latitude.toFixed(5)}, {coords.longitude.toFixed(5)}
+          {horizontalAccuracy != null ? ` · ±${Math.round(horizontalAccuracy)} m` : ''}
         </Text>
       ) : null}
       <TextInput
@@ -256,6 +303,11 @@ export function EntryFormScreen({
         </View>
       </View>
       {photoUri ? <Image source={{ uri: photoUri }} style={styles.photo} /> : null}
+      {photoUri ? (
+        <View style={{ marginTop: 8 }}>
+          <BigButton title="Remove photo" glove={glove} variant="ghost" onPress={() => setPhotoUri(null)} />
+        </View>
+      ) : null}
 
       <Text style={[styles.label, { fontSize: labelSize }]}>Voice note (real recording, stored on phone)</Text>
       <BigButton
@@ -267,6 +319,8 @@ export function EntryFormScreen({
       {voiceUri && !recording ? (
         <View style={{ marginTop: 8 }}>
           <BigButton title="▶️ Play voice note" glove={glove} variant="ghost" onPress={playVoice} />
+          <View style={{ height: 8 }} />
+          <BigButton title="Remove voice note" glove={glove} variant="ghost" onPress={() => setVoiceUri(null)} />
         </View>
       ) : null}
 
@@ -281,9 +335,14 @@ export function EntryFormScreen({
       />
 
       <GlossyCard style={{ marginTop: 20 }}>
-        <BigButton title="💾 Save offline" glove={glove} onPress={save} />
+        <BigButton
+          title={saving ? 'Saving to this phone…' : initialEntry ? '💾 Save changes' : '💾 Save offline'}
+          glove={glove}
+          onPress={save}
+          disabled={saving}
+        />
         <View style={{ height: 10 }} />
-        <BigButton title="Cancel" glove={glove} variant="ghost" onPress={onCancel} />
+        <BigButton title="Cancel" glove={glove} variant="ghost" onPress={cancel} disabled={saving} />
       </GlossyCard>
       <View style={{ height: 28 }} />
     </ScrollView>

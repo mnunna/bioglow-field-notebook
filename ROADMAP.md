@@ -8,8 +8,10 @@ Roadmap placement is not a promise or release date. Move an item into **Now** on
 
 - Offline field-entry capture using six guided templates.
 - Four searchable notebooks with filters, starring, detail view, and deletion.
-- Photo attachment, GPS tagging, and voice-note recording/playback.
-- CSV export through the device share sheet.
+- Durable photo attachment, GPS tagging with accuracy, and voice-note recording/playback.
+- Editing for saved entries with safe media replacement and cleanup.
+- Spreadsheet CSV plus a complete research ZIP containing media and a Darwin Core-compatible CSV.
+- Versioned entry migration, awaited/serialized storage writes, and focused storage/export tests.
 - Rain / Glove Mode for larger outdoor controls.
 - Direct installation and operation on a physical iPhone.
 
@@ -17,7 +19,6 @@ Roadmap placement is not a promise or release date. Move an item into **Now** on
 
 - Commit and preserve the known-good physical-iPhone build configuration.
 - Keep setup instructions reproducible from a clean checkout.
-- Add focused automated coverage around storage and CSV generation.
 - Verify the highest-risk field workflows on a physical iPhone: permissions, photo capture, GPS, voice notes, offline persistence, and export.
 - Replace placeholder icon and splash artwork before public distribution.
 
@@ -31,7 +32,7 @@ These are candidates, not approved implementation tasks. Explore each in `docs/i
 - Offline species and fungi reference material.
 - On-device speech-to-text for voice notes.
 - Reminders to revisit a site after dark or after rain.
-- Better export formats, including a complete expedition report.
+- A polished expedition report format beyond the shipped CSV and research ZIP exports.
 
 ## Later — team and companion workflows
 

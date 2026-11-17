@@ -68,17 +68,23 @@ export function BigButton({
   onPress,
   glove,
   variant = 'primary',
+  disabled = false,
 }: {
   title: string;
-  onPress: () => void;
+  onPress: () => void | Promise<void>;
   glove: boolean;
   variant?: 'primary' | 'ghost' | 'danger';
+  disabled?: boolean;
 }) {
   const pad = glove ? 20 : 14;
   const font = glove ? 19 : 16;
   if (variant === 'primary') {
     return (
-      <Pressable onPress={onPress} style={({ pressed }) => pressed && styles.pressed}>
+      <Pressable
+        onPress={onPress}
+        disabled={disabled}
+        style={({ pressed }) => [pressed && styles.pressed, disabled && styles.disabled]}
+      >
         <LinearGradient
           colors={['#bef264', '#65a30d']}
           style={[styles.btn, { paddingVertical: pad }]}
@@ -92,11 +98,13 @@ export function BigButton({
   return (
     <Pressable
       onPress={onPress}
+      disabled={disabled}
       style={({ pressed }) => [
         styles.btn,
         variant === 'danger' ? styles.btnDanger : styles.btnGhost,
         { paddingVertical: pad },
         pressed && styles.pressed,
+        disabled && styles.disabled,
       ]}
     >
       <Text
@@ -166,6 +174,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.10)',
   },
   pressed: { opacity: 0.82 },
+  disabled: { opacity: 0.48 },
   btn: {
     borderRadius: 16,
     paddingHorizontal: 18,

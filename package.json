@@ -12,6 +12,7 @@
     "expo-location": "~19.0.8",
     "expo-sharing": "~14.0.8",
     "expo-status-bar": "~3.0.9",
+    "fflate": "^0.8.3",
     "react": "19.1.0",
     "react-native": "0.81.5"
   },
@@ -19,6 +20,7 @@
     "@babel/core": "^7.25.2",
     "@types/react": "~19.1.10",
     "babel-preset-expo": "~54.0.10",
+    "tsx": "^4.23.15",
     "typescript": "~5.9.2"
   },
   "main": "expo/AppEntry.js",
@@ -29,6 +31,7 @@
     "ios": "expo run:ios",
     "ios:device": "expo run:ios --device",
     "start": "expo start",
+    "test": "tsx --test tests/*.test.ts",
     "typecheck": "tsc --noEmit",
     "web": "expo start --web"
   },
