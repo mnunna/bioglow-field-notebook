@@ -353,11 +353,11 @@ export default function App() {
         return;
       }
       const archive = await buildResearchArchive(current);
-      const file = new File(Paths.cache, 'bioglow-research-export.zip');
+      const file = new File(Paths.cache, 'eco-note-research-export.zip');
       file.write(archive.bytes);
       await Sharing.shareAsync(file.uri, {
         mimeType: 'application/zip',
-        dialogTitle: 'Export BioGlow research archive',
+        dialogTitle: 'Export Eco Note research archive',
       });
       const historyIds = new Set(current.filter((entry) => entry.exportedAt === null).map((entry) => entry.id));
       const missingMessage = archive.missingMedia.length > 0

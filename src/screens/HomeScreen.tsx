@@ -180,7 +180,7 @@ export function HomeScreen({
           </Text>
           <Text style={[styles.emptyText, glove && styles.emptyTextGlove]}>
             {entries.length === 0
-              ? 'Start a note when you spot something. BioGlow works without a signal and keeps observations on this device.'
+              ? 'Start a note when you spot something. Eco Note works without a signal and keeps observations on this device.'
               : 'All saved observations have been exported and are available in Archive.'}
           </Text>
         </GlossyCard>

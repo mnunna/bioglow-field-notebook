@@ -132,7 +132,7 @@ export function EntryFormScreen({
           'Photo access is off',
           perm.canAskAgain
             ? `Permission to use the ${source} was not given, so no photo was attached.`
-            : `Enable ${source} access for BioGlow in Settings, then try again.`,
+            : `Enable ${source} access for Eco Note in Settings, then try again.`,
           buttons,
         );
         return;

@@ -25,30 +25,30 @@
     "ios": {
       "bundleIdentifier": "com.satishnavudu.bioglowfieldnotebook",
       "infoPlist": {
-        "NSCameraUsageDescription": "BioGlow uses the camera to photograph field findings.",
-        "NSLocationWhenInUseUsageDescription": "BioGlow uses your location to tag where a field finding was made.",
-        "NSMicrophoneUsageDescription": "BioGlow uses the microphone only when you record a voice note.",
-        "NSPhotoLibraryUsageDescription": "BioGlow lets you attach photos of field findings to your notes.",
+        "NSCameraUsageDescription": "Eco Note uses the camera to photograph field findings.",
+        "NSLocationWhenInUseUsageDescription": "Eco Note uses your location to tag where a field finding was made.",
+        "NSMicrophoneUsageDescription": "Eco Note uses the microphone only when you record a voice note.",
+        "NSPhotoLibraryUsageDescription": "Eco Note lets you attach photos of field findings to your notes.",
         "ITSAppUsesNonExemptEncryption": false
       },
       "supportsTablet": true,
       "buildNumber": "1"
     },
-    "name": "BioGlow Field Notebook",
+    "name": "Eco Note",
     "newArchEnabled": true,
     "orientation": "portrait",
     "plugins": [
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "BioGlow uses your location to tag where a field finding was made."
+          "locationWhenInUsePermission": "Eco Note uses your location to tag where a field finding was made."
         }
       ],
       [
         "expo-image-picker",
         {
-          "cameraPermission": "BioGlow uses the camera to photograph field findings.",
-          "photosPermission": "BioGlow lets you attach photos of field findings to your notes."
+          "cameraPermission": "Eco Note uses the camera to photograph field findings.",
+          "photosPermission": "Eco Note lets you attach photos of field findings to your notes."
         }
       ],
       "expo-audio",

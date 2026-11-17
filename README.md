@@ -1,8 +1,8 @@
-# BioGlow Field Notebook — Native iOS & Android App
+# Eco Note — Native iOS & Android App
 
 A real cross-platform mobile app built with **Expo + React Native + TypeScript** —
-one codebase that runs on both iPhone and Android. This is the native version of
-the BioGlow Field Notebook web prototype.
+one codebase that runs on both iPhone and Android. Eco Note grew from the
+BioGlow Field Notebook web prototype.
 
 ## What it is
 
@@ -105,10 +105,10 @@ microphone features available for testing.
    ```bash
    npx expo prebuild --platform ios
    cd ios && pod install && cd ..
-   open ios/BioGlowFieldNotebook.xcworkspace
+   open ios/EcoNote.xcworkspace
    ```
 
-4. In Xcode, select the **BioGlowFieldNotebook** app target, open **Signing &
+4. In Xcode, select the **EcoNote** app target, open **Signing &
    Capabilities**, keep **Automatically manage signing** enabled, and select your
    Personal Team or paid Apple Developer team.
 5. Select the connected iPhone as the run destination and press the Run button.
@@ -119,7 +119,7 @@ After that one-time signing setup, reconnect the phone and run:
 npm run ios:device
 ```
 
-Always open `BioGlowFieldNotebook.xcworkspace`, not the similarly named
+Always open `EcoNote.xcworkspace`, not the similarly named
 `.xcodeproj`, because the workspace includes the installed native dependencies.
 
 ## Build installable apps with EAS Build

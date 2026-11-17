@@ -55,7 +55,7 @@ export async function assembleResearchArchive(
 
   if (missingMedia.length > 0) {
     const lines = [
-      'BioGlow export attachment warning',
+      'Eco Note export attachment warning',
       '',
       'The observations and their text data are included in this archive, but these older attachment files were no longer available on the phone:',
       '',
