@@ -48,12 +48,12 @@ Use `npm run typecheck` as the minimum automated check. Features involving camer
 ## Branching strategy
 
 - `main` should remain buildable and suitable for installing on a test device.
-- Normal development happens on a short-lived branch created from an up-to-date `main`.
+- `origin` is the writable fork and `upstream` is the source repository. Do not push to `upstream` unless the user explicitly requests it.
+- By default, completed Codex work is committed and pushed to `origin/main`. Use a short-lived feature branch or pull request when the user requests one or when the work is explicitly exploratory.
 - Codex-created branches use `codex/<short-kebab-case-topic>`, for example `codex/offline-backup` or `codex/improve-photo-capture`.
 - Keep one coherent outcome per branch. Do not use a long-lived `develop` branch.
 - Make small, logical commits. Do not mix unrelated cleanup, idea exploration, and feature implementation in the same commit.
-- Before merging, review the diff, run `npm run typecheck`, and perform the relevant device checks. Record any check that could not be run.
-- Prefer a pull request and squash merge into `main`, then delete the feature branch. Direct commits to `main` should be exceptional and explicitly requested.
+- Before pushing to `main`, review the diff, run `npm run typecheck`, and perform the relevant device checks. Record any check that could not be run.
 - If the working tree already contains unrelated changes, do not reset, discard, or overwrite them. Continue only when the work can be isolated safely; otherwise pause and ask whether to commit the baseline or use a separate worktree.
 
 ## Definition of done
