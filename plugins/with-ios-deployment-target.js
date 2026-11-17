@@ -100,17 +100,19 @@ module.exports = function withIosDeploymentTarget(config) {
     );
 
     const phases = xcodeConfig.modResults.hash.project.objects.PBXShellScriptBuildPhase;
-    const oldCommand =
+    const legacyCommand =
       '`\\"$NODE_BINARY\\" --print \\"require(\'path\').dirname(require.resolve(\'react-native/package.json\')) + \'/scripts/react-native-xcode.sh\'\\"`';
-    const newCommand =
+    const pathSafeCommand =
       'REACT_NATIVE_XCODE_SCRIPT=\\"$(\\"$NODE_BINARY\\" --print \\"require(\'path\').dirname(require.resolve(\'react-native/package.json\')) + \'/scripts/react-native-xcode.sh\'\\")\\"\\n\\"$REACT_NATIVE_XCODE_SCRIPT\\"';
+    const wrapperCommand = '\\"$PROJECT_ROOT/scripts/run-react-native-xcode.sh\\"';
 
     for (const phase of Object.values(phases)) {
-      if (
-        phase?.name === '"Bundle React Native code and images"' &&
-        phase.shellScript?.includes(oldCommand)
-      ) {
-        phase.shellScript = phase.shellScript.replace(oldCommand, newCommand);
+      if (phase?.name !== '"Bundle React Native code and images"') continue;
+
+      if (phase.shellScript?.includes(legacyCommand)) {
+        phase.shellScript = phase.shellScript.replace(legacyCommand, wrapperCommand);
+      } else if (phase.shellScript?.includes(pathSafeCommand)) {
+        phase.shellScript = phase.shellScript.replace(pathSafeCommand, wrapperCommand);
       }
     }
 
