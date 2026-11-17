@@ -1,6 +1,6 @@
 import type { FieldEntry, NotebookKey, TemplateKey } from './types';
 
-export const FIELD_ENTRY_SCHEMA_VERSION = 3 as const;
+export const FIELD_ENTRY_SCHEMA_VERSION = 4 as const;
 
 const TEMPLATE_KEYS = new Set<TemplateKey>([
   'plant',
@@ -79,7 +79,20 @@ export function migrateFieldEntry(value: unknown): FieldEntry | null {
     photoUri: nullableString(raw.photoUri),
     voiceUri: nullableString(raw.voiceUri),
     starred: raw.starred === true,
+    exportedAt: nullableString(raw.exportedAt),
     createdAt,
     updatedAt: stringValue(raw.updatedAt, createdAt),
   };
+}
+
+export function markEntriesExported(
+  entries: FieldEntry[],
+  entryIds: ReadonlySet<string>,
+  exportedAt: string,
+): FieldEntry[] {
+  return entries.map((entry) =>
+    entryIds.has(entry.id) && entry.exportedAt === null
+      ? { ...entry, exportedAt }
+      : entry,
+  );
 }

@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Alert,
   Pressable,
-  SafeAreaView,
   StyleSheet,
   Text,
   View,
@@ -10,6 +9,10 @@ import {
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { File, Paths } from 'expo-file-system';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import * as Sharing from 'expo-sharing';
 import type { FieldEntry, NotebookKey, TabKey, TemplateDef } from './src/types';
 import {
@@ -26,6 +29,7 @@ import {
   persistMediaFile,
 } from './src/media';
 import { HomeScreen } from './src/screens/HomeScreen';
+import { CaptureScreen } from './src/screens/CaptureScreen';
 import { EntryFormScreen } from './src/screens/EntryFormScreen';
 import { NotebookScreen } from './src/screens/NotebookScreen';
 import { EntryDetailScreen } from './src/screens/EntryDetailScreen';
@@ -35,16 +39,27 @@ import { RainGloveOverlay } from './src/components/RainGloveOverlay';
 import { templateByKey } from './src/templates';
 import { isSampleEntry } from './src/sampleData';
 import { createSampleEntriesWithMedia } from './src/sampleMedia';
+import { markEntriesExported } from './src/entryModel';
 
-type Route =
-  | { name: 'tabs' }
-  | { name: 'form'; template: TemplateDef; entryId?: string }
-  | { name: 'detail'; entryId: string };
+type RootStackParamList = {
+  Tabs: undefined;
+  Form: { template: TemplateDef; entryId?: string };
+  Detail: { entryId: string };
+};
 
-const TABS: { key: TabKey; label: string; icon: string }[] = [
-  { key: 'home', label: 'Home', icon: '🏠' },
-  { key: 'notebook', label: 'Notebook', icon: '📓' },
-  { key: 'ideas', label: 'Ideas', icon: '💡' },
+const Stack = createNativeStackNavigator<RootStackParamList>();
+const navigationRef = createNavigationContainerRef<RootStackParamList>();
+
+const TABS: {
+  key: TabKey;
+  label: string;
+  icon: React.ComponentProps<typeof Ionicons>['name'];
+  activeIcon: React.ComponentProps<typeof Ionicons>['name'];
+}[] = [
+  { key: 'home', label: 'History', icon: 'time-outline', activeIcon: 'time' },
+  { key: 'capture', label: 'New note', icon: 'add-circle-outline', activeIcon: 'add-circle' },
+  { key: 'notebook', label: 'Archive', icon: 'archive-outline', activeIcon: 'archive' },
+  { key: 'ideas', label: 'More', icon: 'ellipsis-horizontal-circle-outline', activeIcon: 'ellipsis-horizontal-circle' },
 ];
 
 export default function App() {
@@ -53,7 +68,6 @@ export default function App() {
   const entryMutationQueue = useRef<Promise<void>>(Promise.resolve());
   const [glove, setGlove] = useState(false);
   const [tab, setTab] = useState<TabKey>('home');
-  const [route, setRoute] = useState<Route>({ name: 'tabs' });
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<NotebookKey | 'all'>('all');
   const [sampleDataPending, setSampleDataPending] = useState(false);
@@ -181,8 +195,8 @@ export default function App() {
       }
       setFilter('all');
       setSearch('');
-      setTab('notebook');
-      setRoute({ name: 'tabs' });
+      setTab(saved.exportedAt === null ? 'home' : 'notebook');
+      if (navigationRef.isReady()) navigationRef.resetRoot({ index: 0, routes: [{ name: 'Tabs' }] });
     } catch (error) {
       for (const uri of createdMedia) {
         try {
@@ -232,8 +246,8 @@ export default function App() {
               } catch {
                 // The notebook is correct even if an orphaned file remains.
               }
-              setRoute({ name: 'tabs' });
-              setTab('notebook');
+              if (navigationRef.isReady() && navigationRef.canGoBack()) navigationRef.goBack();
+              setTab(entry.exportedAt === null ? 'home' : 'notebook');
             } catch (error) {
               Alert.alert('Entry not deleted', error instanceof Error ? error.message : 'Try again.');
             }
@@ -268,7 +282,7 @@ export default function App() {
 
         setFilter('all');
         setSearch('');
-        setTab('notebook');
+        setTab('home');
       } catch (error) {
         for (const entry of samples) {
           try {
@@ -345,11 +359,41 @@ export default function App() {
         mimeType: 'application/zip',
         dialogTitle: 'Export BioGlow research archive',
       });
-      if (archive.missingMedia.length > 0) {
+      const historyIds = new Set(current.filter((entry) => entry.exportedAt === null).map((entry) => entry.id));
+      const missingMessage = archive.missingMedia.length > 0
+        ? ` ${archive.missingMedia.length} older attachment${archive.missingMedia.length === 1 ? ' was' : 's were'} unavailable; all observation text and remaining media are still in the ZIP.`
+        : '';
+
+      if (historyIds.size > 0) {
         Alert.alert(
-          'Exported with missing attachments',
-          `${archive.missingMedia.length} older attachment${archive.missingMedia.length === 1 ? ' was' : 's were'} no longer available. All observation text and remaining media were exported. See missing-attachments.txt in the ZIP.`,
+          'Move exported notes to Archive?',
+          `If you saved or sent the research ZIP, move ${historyIds.size} ${historyIds.size === 1 ? 'note' : 'notes'} out of History and into Archive.${missingMessage}`,
+          [
+            { text: 'Keep in History', style: 'cancel' },
+            {
+              text: 'Move to Archive',
+              onPress: () => {
+                void enqueueEntryMutation(async () => {
+                  const archivedAt = new Date().toISOString();
+                  const next = markEntriesExported(entriesRef.current, historyIds, archivedAt);
+                  try {
+                    await saveEntries(next);
+                    commitEntries(next);
+                    setTab('notebook');
+                    if (navigationRef.isReady()) navigationRef.resetRoot({ index: 0, routes: [{ name: 'Tabs' }] });
+                  } catch (error) {
+                    Alert.alert(
+                      'Export shared, but History was not updated',
+                      error instanceof Error ? error.message : 'The notes remain safely in History.',
+                    );
+                  }
+                });
+              },
+            },
+          ],
         );
+      } else if (archive.missingMedia.length > 0) {
+        Alert.alert('Exported with missing attachments', missingMessage.trim());
       }
     } catch (error) {
       Alert.alert(
@@ -357,96 +401,142 @@ export default function App() {
         error instanceof Error ? error.message : 'The research archive could not be created.',
       );
     }
-  }, []);
-
-  const detailEntry =
-    route.name === 'detail' ? entries.find((e) => e.id === route.entryId) : undefined;
-  const formEntry =
-    route.name === 'form' && route.entryId
-      ? entries.find((entry) => entry.id === route.entryId)
-      : undefined;
+  }, [commitEntries, enqueueEntryMutation]);
 
   return (
-    <SafeAreaView style={styles.root}>
+    <>
       <StatusBar style="light" />
-      <LinearGradient colors={[COLORS.bgDeep, COLORS.bg, '#0a2e1f']} style={styles.fill}>
-        <View style={styles.content}>
-          {route.name === 'form' ? (
-            <EntryFormScreen
-              template={route.template}
-              initialEntry={formEntry}
-              glove={glove}
-              onSave={saveEntry}
-              onCancel={() => setRoute({ name: 'tabs' })}
-            />
-          ) : route.name === 'detail' && detailEntry ? (
-            <EntryDetailScreen
-              entry={detailEntry}
-              glove={glove}
-              onBack={() => setRoute({ name: 'tabs' })}
-              onEdit={(entry) => setRoute({
-                name: 'form',
-                template: templateByKey(entry.templateKey),
-                entryId: entry.id,
-              })}
-              onToggleStar={toggleStar}
-              onDelete={deleteEntry}
-            />
-          ) : tab === 'home' ? (
-            <HomeScreen
-              entries={entries}
-              glove={glove}
-              onToggleGlove={toggleGlove}
-              onPickTemplate={(t) => setRoute({ name: 'form', template: t })}
-              onPickNotebook={(k) => {
-                setFilter(k);
-                setTab('notebook');
-              }}
-              sampleEntryCount={entries.filter(isSampleEntry).length}
-              sampleDataPending={sampleDataPending}
-              onLoadSampleData={loadSampleData}
-              onRemoveSampleData={removeSampleData}
-            />
-          ) : tab === 'notebook' ? (
-            <NotebookScreen
-              entries={entries}
-              glove={glove}
-              search={search}
-              onSearch={setSearch}
-              filter={filter}
-              onFilter={setFilter}
-              onOpen={(e) => setRoute({ name: 'detail', entryId: e.id })}
-              onToggleStar={toggleStar}
-              onExport={shareResearchArchive}
-            />
-          ) : (
-            <IdeasScreen />
-          )}
-        </View>
+      <SafeAreaProvider>
+        <NavigationContainer ref={navigationRef}>
+          <Stack.Navigator
+          screenOptions={{
+            contentStyle: { backgroundColor: COLORS.bgDeep },
+            headerStyle: { backgroundColor: COLORS.bgDeep },
+            headerTintColor: COLORS.text,
+            headerShadowVisible: false,
+            headerBackButtonDisplayMode: 'minimal',
+            gestureEnabled: true,
+            animation: 'slide_from_right',
+          }}
+        >
+          <Stack.Screen name="Tabs" options={{ headerShown: false }}>
+            {({ navigation }) => (
+              <SafeAreaView style={styles.root}>
+                <LinearGradient colors={[COLORS.bgDeep, COLORS.bg, COLORS.bgSoft]} style={styles.fill}>
+                  <View style={styles.content}>
+                    {tab === 'home' ? (
+                      <HomeScreen
+                        entries={entries}
+                        glove={glove}
+                        onToggleGlove={toggleGlove}
+                        onStartCapture={() => setTab('capture')}
+                        onExport={shareResearchArchive}
+                        onOpen={(entry) => navigation.navigate('Detail', { entryId: entry.id })}
+                        sampleEntryCount={entries.filter(isSampleEntry).length}
+                        sampleDataPending={sampleDataPending}
+                        onLoadSampleData={loadSampleData}
+                        onRemoveSampleData={removeSampleData}
+                      />
+                    ) : tab === 'capture' ? (
+                      <CaptureScreen
+                        glove={glove}
+                        onPickTemplate={(template) => navigation.navigate('Form', { template })}
+                      />
+                    ) : tab === 'notebook' ? (
+                      <NotebookScreen
+                        entries={entries}
+                        glove={glove}
+                        search={search}
+                        onSearch={setSearch}
+                        filter={filter}
+                        onFilter={setFilter}
+                        onOpen={(entry) => navigation.navigate('Detail', { entryId: entry.id })}
+                        onToggleStar={toggleStar}
+                        onExport={shareResearchArchive}
+                      />
+                    ) : (
+                      <IdeasScreen />
+                    )}
+                  </View>
 
-        <RainGloveOverlay visible={showGloveAnim} />
+                  <RainGloveOverlay visible={showGloveAnim} />
 
-        {route.name === 'tabs' && (
-          <View style={styles.tabBar}>
-            {TABS.map((t) => {
-              const active = tab === t.key;
+                  <View style={styles.tabBar}>
+                    {TABS.map((item) => {
+                      const active = tab === item.key;
+                      return (
+                        <Pressable
+                          key={item.key}
+                          onPress={() => setTab(item.key)}
+                          style={[styles.tab, glove && styles.tabGlove, active && styles.tabActive]}
+                        >
+                          <Ionicons
+                            name={active ? item.activeIcon : item.icon}
+                            size={glove ? 29 : 23}
+                            color={active ? COLORS.lime : COLORS.muted}
+                          />
+                          <Text style={[styles.tabLabel, active && styles.tabLabelActive, glove && styles.tabLabelGlove]}>
+                            {item.label}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                </LinearGradient>
+              </SafeAreaView>
+            )}
+          </Stack.Screen>
+
+          <Stack.Screen name="Form" options={{ title: '' }}>
+            {({ navigation, route }) => (
+              <SafeAreaView style={styles.root} edges={['bottom']}>
+                <LinearGradient colors={[COLORS.bgDeep, COLORS.bg, COLORS.bgSoft]} style={styles.fill}>
+                  <EntryFormScreen
+                    template={route.params.template}
+                    initialEntry={route.params.entryId
+                      ? entries.find((entry) => entry.id === route.params.entryId)
+                      : undefined}
+                    glove={glove}
+                    onSave={saveEntry}
+                    onCancel={() => navigation.goBack()}
+                  />
+                </LinearGradient>
+              </SafeAreaView>
+            )}
+          </Stack.Screen>
+
+          <Stack.Screen name="Detail" options={{ title: '' }}>
+            {({ navigation, route }) => {
+              const entry = entries.find((candidate) => candidate.id === route.params.entryId);
+              if (!entry) {
+                return (
+                  <View style={styles.missingEntry}>
+                    <Text style={styles.missingEntryText}>This observation is no longer available.</Text>
+                  </View>
+                );
+              }
               return (
-                <Pressable
-                  key={t.key}
-                  onPress={() => setTab(t.key)}
-                  style={[styles.tab, glove && styles.tabGlove, active && styles.tabActive]}
-                >
-                  <Text style={[styles.tabIcon, glove && { fontSize: 26 }]}>{t.icon}</Text>
-                  <Text style={[styles.tabLabel, active && styles.tabLabelActive, glove && { fontSize: 14 }]}>
-                    {t.label}
-                  </Text>
-                </Pressable>
+                <SafeAreaView style={styles.root} edges={['bottom']}>
+                  <LinearGradient colors={[COLORS.bgDeep, COLORS.bg, COLORS.bgSoft]} style={styles.fill}>
+                    <EntryDetailScreen
+                      entry={entry}
+                      glove={glove}
+                      onEdit={(selected) => navigation.navigate('Form', {
+                        template: templateByKey(selected.templateKey),
+                        entryId: selected.id,
+                      })}
+                      onToggleStar={toggleStar}
+                      onDelete={deleteEntry}
+                    />
+                  </LinearGradient>
+                </SafeAreaView>
               );
-            })}
-          </View>
-        )}
-      </LinearGradient>
-    </SafeAreaView>
+            }}
+          </Stack.Screen>
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SafeAreaProvider>
+    </>
   );
 }
 
@@ -456,16 +546,24 @@ const styles = StyleSheet.create({
   content: { flex: 1 },
   tabBar: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(4,21,15,0.92)',
+    backgroundColor: 'rgba(2,19,13,0.96)',
     borderTopWidth: 1,
     borderTopColor: COLORS.cardBorder,
-    paddingVertical: 8,
+    paddingTop: 7,
+    paddingBottom: 8,
     paddingHorizontal: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.26,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: -4 },
+    elevation: 12,
   },
-  tab: { flex: 1, alignItems: 'center', borderRadius: 14, paddingVertical: 6 },
+  tab: { flex: 1, alignItems: 'center', justifyContent: 'center', borderRadius: 15, paddingVertical: 6 },
   tabGlove: { paddingVertical: 12 },
-  tabActive: { backgroundColor: 'rgba(163,230,53,0.16)' },
-  tabIcon: { fontSize: 21 },
-  tabLabel: { color: COLORS.muted, fontSize: 12, marginTop: 2, fontWeight: '600' },
+  tabActive: { backgroundColor: 'rgba(182,239,104,0.14)' },
+  tabLabel: { color: COLORS.muted, fontSize: 10.5, marginTop: 2, fontWeight: '700' },
   tabLabelActive: { color: COLORS.lime },
+  tabLabelGlove: { fontSize: 14, marginTop: 4 },
+  missingEntry: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.bgDeep, padding: 24 },
+  missingEntryText: { color: COLORS.text, fontSize: 16, textAlign: 'center' },
 });

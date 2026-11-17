@@ -7,7 +7,7 @@ import type { FieldEntry } from '../src/types';
 
 function entry(overrides: Partial<FieldEntry> = {}): FieldEntry {
   return {
-    schemaVersion: 3,
+    schemaVersion: 4,
     id: 'entry-1',
     templateKey: 'animal',
     notebookKey: 'species',
@@ -25,6 +25,7 @@ function entry(overrides: Partial<FieldEntry> = {}): FieldEntry {
     photoUri: 'file:///documents/bioglow-media/photo.jpeg',
     voiceUri: 'file:///documents/bioglow-media/voice.m4a',
     starred: true,
+    exportedAt: null,
     createdAt: '2026-11-17T10:00:00.000Z',
     updatedAt: '2026-11-17T10:05:00.000Z',
     ...overrides,

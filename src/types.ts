@@ -42,7 +42,7 @@ export interface NotebookDef {
 }
 
 export interface FieldEntry {
-  schemaVersion: 3;
+  schemaVersion: 4;
   id: string;
   templateKey: TemplateKey;
   notebookKey: NotebookKey;
@@ -60,8 +60,10 @@ export interface FieldEntry {
   /** Stable managed-media reference, temporary recorder URI while editing, or null. */
   voiceUri: string | null;
   starred: boolean;
+  /** When this entry was included in a completed research ZIP export, or null while in History. */
+  exportedAt: string | null;
   createdAt: string; // ISO string
   updatedAt: string; // ISO string
 }
 
-export type TabKey = 'home' | 'notebook' | 'ideas';
+export type TabKey = 'home' | 'capture' | 'notebook' | 'ideas';

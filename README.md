@@ -27,18 +27,26 @@ backpacks are already heavy. This app runs on the phone they already carry:
 - Export one complete **research ZIP** containing photos, audio, a readable
   spreadsheet CSV, and a Darwin Core-compatible occurrence CSV. An unavailable
   attachment from an older install is reported without blocking the rest of the export.
+- **History → Archive workflow** — new observations remain in History;
+  after a research ZIP is saved or sent, the user can confirm moving those notes to
+  Archive. Editing does not change that status, and the observations and their media
+  remain on the device.
 - One-tap **sample data** adds six labeled observations, two synthetic photos, and
   a sample voice note for repeatable testing; it can be reset or removed without
   changing real field notes.
 - **Rain / Glove Mode** — bigger buttons and text for wet hands
-- **Ideas tab** — V1 → V2 → V3 roadmap and the alternate ideas considered
+- **More tab** — V1 → V2 → V3 roadmap and the alternate ideas considered
   (voice pendant, e-ink tablet, QR tags, smartwatch)
-- Modern glossy design: deep-green gradients, glass cards, glowing lime/teal accents
+- Modern **Journal Stream** layout: a day-based observation timeline, dedicated
+  icon-led New Note screen, searchable date-grouped archive, and glossy category
+  colours that remain legible outdoors
+- Native stack navigation for entry details and forms, including the standard iOS
+  left-edge swipe-back gesture and Android system back behavior
 
 ## Project structure
 
 ```
-App.tsx                     Navigation (bottom tabs + form/detail routes) and app state
+App.tsx                     Native stack, bottom tabs, export/archive flow, and app state
 src/types.ts                Entry, template and notebook types
 src/templates.ts            All 6 templates (guided fields) and 4 notebook definitions
 src/entryModel.ts           Persisted-entry schema and migration
@@ -50,9 +58,10 @@ src/exportArchiveCore.ts    Tested archive policy for unavailable old attachment
 src/sampleData.ts           Clearly labeled sample observations for repeatable tests
 src/sampleMedia.ts          Bundled sample attachment setup and durable copying
 src/components/ui.tsx       GlossyCard, BigButton, Chip, shared colours
-src/screens/HomeScreen.tsx        Template + notebook picker, Rain/Glove toggle
+src/screens/HomeScreen.tsx        Journal timeline, recent notes, Rain/Glove toggle
+src/screens/CaptureScreen.tsx     Icon-led picker for all six observation templates
 src/screens/EntryFormScreen.tsx   Guided form: GPS, photo, voice recording
-src/screens/NotebookScreen.tsx    Search, filters, star, export
+src/screens/NotebookScreen.tsx    Date-grouped archive, search, filters, star, export
 src/screens/EntryDetailScreen.tsx Full entry view, star, delete
 src/screens/IdeasScreen.tsx       Roadmap and alternate ideas
 app.json                    App identity, bundle IDs, permission usage strings

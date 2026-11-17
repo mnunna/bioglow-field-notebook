@@ -1,9 +1,12 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Alert,
   Image,
+  InteractionManager,
   Keyboard,
+  KeyboardAvoidingView,
   Linking,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -13,6 +16,7 @@ import {
 } from 'react-native';
 import * as Location from 'expo-location';
 import * as ImagePicker from 'expo-image-picker';
+import { LinearGradient } from 'expo-linear-gradient';
 import {
   RecordingPresets,
   requestRecordingPermissionsAsync,
@@ -41,6 +45,7 @@ export function EntryFormScreen({
   onCancel: () => void;
 }) {
   const entryId = useRef(initialEntry?.id ?? newId()).current;
+  const titleInputRef = useRef<TextInput>(null);
   const [title, setTitle] = useState(initialEntry?.title ?? '');
   const [values, setValues] = useState<Record<string, string>>(
     initialEntry?.values ?? (template.fields.some((field) => field.type === 'brightness') ? { brightness: '3' } : {}),
@@ -67,6 +72,15 @@ export function EntryFormScreen({
   const setValue = (k: string, v: string) => setValues((prev) => ({ ...prev, [k]: v }));
   const labelSize = glove ? 18 : 15;
   const inputSize = glove ? 18 : 15;
+
+  useEffect(() => {
+    if (initialEntry) return;
+
+    const focusTask = InteractionManager.runAfterInteractions(() => {
+      titleInputRef.current?.focus();
+    });
+    return () => focusTask.cancel();
+  }, [initialEntry]);
 
   async function useLocation() {
     try {
@@ -199,6 +213,7 @@ export function EntryFormScreen({
         photoUri,
         voiceUri,
         starred: initialEntry?.starred ?? false,
+        exportedAt: initialEntry?.exportedAt ?? null,
         createdAt: initialEntry?.createdAt ?? now,
         updatedAt: now,
       });
@@ -226,16 +241,32 @@ export function EntryFormScreen({
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.wrap} keyboardShouldPersistTaps="handled">
-      <Text style={styles.heading}>
-        {template.icon} {initialEntry ? `Edit ${template.title}` : template.title}
-      </Text>
-      <Text style={styles.auto}>
-        🕒 {new Date().toLocaleString()} · auto-filled, saved offline on this phone
-      </Text>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      style={styles.keyboardAvoidingView}
+    >
+      <ScrollView
+        contentContainerStyle={styles.wrap}
+        keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
+        keyboardShouldPersistTaps="handled"
+      >
+      <View style={styles.formHeader}>
+        <LinearGradient colors={template.gradient} style={[styles.headerIcon, glove && styles.headerIconGlove]}>
+          <View style={styles.headerGloss} />
+          <Text style={[styles.headerIconText, glove && styles.headerIconTextGlove]}>{template.icon}</Text>
+        </LinearGradient>
+        <View style={styles.headerCopy}>
+          <Text style={styles.eyebrow}>{initialEntry ? 'EDIT FIELD NOTE' : 'NEW FIELD NOTE'}</Text>
+          <Text style={[styles.heading, glove && styles.headingGlove]}>{template.title}</Text>
+          <Text style={[styles.auto, glove && styles.autoGlove]}>
+            {new Date().toLocaleString()} · saved offline
+          </Text>
+        </View>
+      </View>
 
       <Text style={[styles.label, { fontSize: labelSize }]}>Title *</Text>
       <TextInput
+        ref={titleInputRef}
         style={[styles.input, { fontSize: inputSize }]}
         placeholder="Short name for this finding"
         placeholderTextColor={COLORS.muted}
@@ -391,23 +422,61 @@ export function EntryFormScreen({
         <BigButton title="Cancel" glove={glove} variant="ghost" onPress={cancel} disabled={saving} />
       </GlossyCard>
       <View style={{ height: 28 }} />
-    </ScrollView>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  wrap: { padding: 16 },
-  heading: { color: COLORS.text, fontSize: 24, fontWeight: '900' },
-  auto: { color: COLORS.muted, fontSize: 13, marginTop: 6, marginBottom: 6 },
+  keyboardAvoidingView: { flex: 1 },
+  wrap: { flexGrow: 1, padding: 16 },
+  formHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 6 },
+  headerIcon: {
+    width: 58,
+    height: 58,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
+    shadowColor: '#000',
+    shadowOpacity: 0.26,
+    shadowRadius: 9,
+    shadowOffset: { width: 0, height: 5 },
+    elevation: 5,
+  },
+  headerIconGlove: { width: 70, height: 70, borderRadius: 21 },
+  headerGloss: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: '48%',
+    backgroundColor: 'rgba(255,255,255,0.13)',
+  },
+  headerIconText: { fontSize: 29 },
+  headerIconTextGlove: { fontSize: 36 },
+  headerCopy: { flex: 1, marginLeft: 13 },
+  eyebrow: { color: COLORS.muted, fontSize: 10.5, fontWeight: '800', letterSpacing: 1.2 },
+  heading: { color: COLORS.text, fontSize: 24, lineHeight: 29, fontWeight: '900', letterSpacing: -0.5, marginTop: 2 },
+  headingGlove: { fontSize: 28, lineHeight: 34 },
+  auto: { color: COLORS.muted, fontSize: 12, marginTop: 4 },
+  autoGlove: { fontSize: 14 },
   label: { color: COLORS.text, fontWeight: '700', marginTop: 18, marginBottom: 8 },
   input: {
-    backgroundColor: 'rgba(255,255,255,0.09)',
+    backgroundColor: COLORS.cardStrong,
     borderWidth: 1,
     borderColor: COLORS.cardBorder,
-    borderRadius: 14,
+    borderRadius: 16,
     color: COLORS.text,
     paddingHorizontal: 14,
-    paddingVertical: 12,
+    paddingVertical: 13,
+    shadowColor: '#000',
+    shadowOpacity: 0.13,
+    shadowRadius: 7,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 2,
   },
   multiline: { minHeight: 84, textAlignVertical: 'top' },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap' },

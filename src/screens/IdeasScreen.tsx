@@ -65,12 +65,13 @@ const ALTERNATIVES: { title: string; pro: string; con: string }[] = [
 export function IdeasScreen() {
   return (
     <ScrollView contentContainerStyle={styles.wrap}>
-      <Text style={styles.heading}>💡 Ideas & Roadmap</Text>
+      <Text style={styles.eyebrow}>BIOGLOW</Text>
+      <Text style={styles.heading}>More</Text>
       <Text style={styles.sub}>
-        For FLL judges: what we built, what we would improve, and the other ideas we compared it against.
+        Product ideas, future field tools, and the alternatives considered for the project.
       </Text>
 
-      <SectionTitle>Improved versions</SectionTitle>
+      <SectionTitle>Ideas & roadmap</SectionTitle>
       {ROADMAP.map((r) => (
         <GlossyCard key={r.version} gradient={r.gradient} style={styles.gap}>
           <Text style={styles.cardVersion}>{r.version}</Text>
@@ -105,7 +106,8 @@ export function IdeasScreen() {
 
 const styles = StyleSheet.create({
   wrap: { padding: 16 },
-  heading: { color: COLORS.text, fontSize: 24, fontWeight: '900' },
+  eyebrow: { color: COLORS.muted, fontSize: 11, fontWeight: '800', letterSpacing: 1.3 },
+  heading: { color: COLORS.text, fontSize: 29, lineHeight: 34, fontWeight: '900', letterSpacing: -0.7, marginTop: 3 },
   sub: { color: COLORS.muted, fontSize: 13, marginTop: 6, lineHeight: 19 },
   gap: { marginBottom: 12 },
   cardVersion: { color: 'rgba(255,255,255,0.85)', fontSize: 12, fontWeight: '700', textTransform: 'uppercase' },

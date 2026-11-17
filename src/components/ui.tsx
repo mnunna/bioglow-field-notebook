@@ -10,14 +10,19 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 
 export const COLORS = {
-  bgDeep: '#04150f',
-  bg: '#06231a',
-  card: 'rgba(255,255,255,0.08)',
-  cardBorder: 'rgba(255,255,255,0.16)',
-  text: '#f0fdf4',
-  muted: '#a7c4b5',
-  lime: '#a3e635',
-  teal: '#2dd4bf',
+  bgDeep: '#02130d',
+  bg: '#05251a',
+  bgSoft: '#0a3022',
+  card: 'rgba(255,255,255,0.085)',
+  cardStrong: 'rgba(12,48,34,0.94)',
+  cardBorder: 'rgba(221,255,232,0.17)',
+  text: '#f2fff5',
+  muted: '#a5c5b2',
+  lime: '#b6ef68',
+  teal: '#38e0c1',
+  amber: '#ffb04d',
+  violet: '#c69bf7',
+  blue: '#73b7ff',
   danger: '#f87171',
 };
 
@@ -86,7 +91,7 @@ export function BigButton({
         style={({ pressed }) => [pressed && styles.pressed, disabled && styles.disabled]}
       >
         <LinearGradient
-          colors={['#bef264', '#65a30d']}
+          colors={['#d6ff8a', '#82bd26']}
           style={[styles.btn, { paddingVertical: pad }]}
         >
           <View style={styles.highlight} />
@@ -159,31 +164,31 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.cardBorder,
     shadowColor: '#000',
-    shadowOpacity: 0.35,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.32,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 7 },
     elevation: 6,
   },
-  plainCard: { backgroundColor: COLORS.card },
+  plainCard: { backgroundColor: COLORS.cardStrong },
   highlight: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     height: '45%',
-    backgroundColor: 'rgba(255,255,255,0.10)',
+    backgroundColor: 'rgba(255,255,255,0.12)',
   },
   pressed: { opacity: 0.82 },
   disabled: { opacity: 0.48 },
   btn: {
-    borderRadius: 16,
+    borderRadius: 17,
     paddingHorizontal: 18,
     alignItems: 'center',
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: COLORS.cardBorder,
   },
-  btnGhost: { backgroundColor: 'rgba(255,255,255,0.08)' },
+  btnGhost: { backgroundColor: 'rgba(255,255,255,0.09)' },
   btnDanger: { backgroundColor: 'rgba(248,113,113,0.14)', borderColor: 'rgba(248,113,113,0.5)' },
   btnTextDark: { color: '#1a2e05', fontWeight: '800' },
   btnTextLight: { color: COLORS.text, fontWeight: '700' },

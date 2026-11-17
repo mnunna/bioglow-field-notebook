@@ -108,6 +108,7 @@ export function createSampleEntries(now = new Date()): FieldEntry[] {
       photoUri: null,
       voiceUri: null,
       starred: definition.starred ?? false,
+      exportedAt: null,
       createdAt,
       updatedAt: createdAt,
     };
