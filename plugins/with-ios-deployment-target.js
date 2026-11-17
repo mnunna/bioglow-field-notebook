@@ -2,10 +2,24 @@ const { withPodfile, withXcodeProject } = require('@expo/config-plugins');
 
 const MARKER = '# BioGlow: keep every CocoaPods target compatible with current Xcode';
 const PATH_MARKER = '# BioGlow: quote the Expo Constants script when the project path has spaces';
+const WARNINGS_MARKER = '# BioGlow: keep third-party warnings out of the app build';
 
 module.exports = function withIosDeploymentTarget(config) {
   let nextConfig = withPodfile(config, (podfileConfig) => {
-    const podfile = podfileConfig.modResults.contents;
+    let podfile = podfileConfig.modResults.contents;
+
+    if (!podfile.includes(WARNINGS_MARKER)) {
+      const prepareProject = 'prepare_react_native_project!';
+
+      if (!podfile.includes(prepareProject)) {
+        throw new Error('Could not configure CocoaPods warning handling.');
+      }
+
+      podfile = podfile.replace(
+        prepareProject,
+        `${prepareProject}\n\n${WARNINGS_MARKER}\ninhibit_all_warnings!`,
+      );
+    }
 
     const postInstallEnd = '\n  end\nend\n';
     const insertionPoint = podfile.lastIndexOf(postInstallEnd);
@@ -24,6 +38,16 @@ module.exports = function withIosDeploymentTarget(config) {
       target.build_configurations.each do |build_config|
         build_config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] =
           podfile_properties['ios.deploymentTarget'] || '17.0'
+        build_config.build_settings['OTHER_LIBTOOLFLAGS'] =
+          '$(inherited) -no_warning_for_no_symbols'
+      end
+
+      if target.name == 'hermes-engine'
+        target.shell_script_build_phases.each do |phase|
+          next unless phase.name == '[CP-User] [Hermes] Replace Hermes for the right configuration, if needed'
+
+          phase.always_out_of_date = '1'
+        end
       end
     end`);
     }
@@ -43,7 +67,7 @@ module.exports = function withIosDeploymentTarget(config) {
     end`);
     }
 
-    if (additions.length === 0) {
+    if (additions.length === 0 && podfile === podfileConfig.modResults.contents) {
       return podfileConfig;
     }
 
@@ -60,6 +84,18 @@ module.exports = function withIosDeploymentTarget(config) {
       'ENABLE_USER_SCRIPT_SANDBOXING',
       'NO',
       undefined,
+      'BioGlowFieldNotebook',
+    );
+    xcodeConfig.modResults.updateBuildProperty(
+      'OTHER_SWIFT_FLAGS',
+      '"$(inherited) -D EXPO_CONFIGURATION_DEBUG -Xcc -Wno-incomplete-umbrella -Xcc -Wno-nullability-completeness"',
+      'Debug',
+      'BioGlowFieldNotebook',
+    );
+    xcodeConfig.modResults.updateBuildProperty(
+      'OTHER_SWIFT_FLAGS',
+      '"$(inherited) -D EXPO_CONFIGURATION_RELEASE -Xcc -Wno-incomplete-umbrella -Xcc -Wno-nullability-completeness"',
+      'Release',
       'BioGlowFieldNotebook',
     );
 
