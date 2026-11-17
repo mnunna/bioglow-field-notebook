@@ -50,7 +50,18 @@
           "cameraPermission": "BioGlow uses the camera to photograph field findings.",
           "photosPermission": "BioGlow lets you attach photos of field findings to your notes."
         }
-      ]
+      ],
+      "expo-audio",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "deploymentTarget": "17.0"
+          }
+        }
+      ],
+      "./plugins/with-ios-deployment-target",
+      "./plugins/with-ios-scene-lifecycle"
     ],
     "scheme": "bioglow",
     "slug": "bioglow-field-notebook",

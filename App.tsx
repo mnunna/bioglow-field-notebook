@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
-import * as FileSystem from 'expo-file-system';
+import { File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import type { FieldEntry, NotebookKey, TabKey, TemplateDef } from './src/types';
 import {
@@ -111,11 +111,10 @@ export default function App() {
     }
     const csv = entriesToCsv(entries);
     try {
-      const dir = FileSystem.cacheDirectory;
-      if (dir && (await Sharing.isAvailableAsync())) {
-        const path = `${dir}bioglow-field-notes.csv`;
-        await FileSystem.writeAsStringAsync(path, csv);
-        await Sharing.shareAsync(path, { mimeType: 'text/csv', dialogTitle: 'Export BioGlow field notes' });
+      if (await Sharing.isAvailableAsync()) {
+        const file = new File(Paths.cache, 'bioglow-field-notes.csv');
+        file.write(csv);
+        await Sharing.shareAsync(file.uri, { mimeType: 'text/csv', dialogTitle: 'Export BioGlow field notes' });
         return;
       }
       throw new Error('sharing unavailable');

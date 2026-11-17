@@ -19,7 +19,7 @@ backpacks are already heavy. This app runs on the phone they already carry:
   search and filters
 - **Auto date/time**, **GPS location button** (with permission fallback to typing the
   place), **photo attach** (camera or library), **real voice-note recording** and
-  playback (expo-av — it records audio; it does *not* fake speech-to-text)
+  playback (expo-audio — it records audio; it does *not* fake speech-to-text)
 - **100% offline saving** on the device with AsyncStorage — no account, no signal needed
 - Star entries, entry detail view, delete, and **CSV export** (share sheet)
 - **Rain / Glove Mode** — bigger buttons and text for wet hands
@@ -65,6 +65,37 @@ Type-check at any time:
 ```bash
 npm run typecheck   # tsc --noEmit
 ```
+
+## Install directly on an iPhone with Xcode
+
+This creates a normal development app on the iPhone, with the camera, GPS and
+microphone features available for testing.
+
+1. Connect the unlocked iPhone to the Mac with a data-capable cable, tap **Trust**
+   on both devices if asked, and enable **Developer Mode** on the iPhone if iOS
+   prompts for it.
+2. In Xcode, open **Settings → Accounts** and add the Apple ID that will sign the app.
+3. Generate the native project and install its dependencies:
+
+   ```bash
+   npx expo prebuild --platform ios
+   cd ios && pod install && cd ..
+   open ios/BioGlowFieldNotebook.xcworkspace
+   ```
+
+4. In Xcode, select the **BioGlowFieldNotebook** app target, open **Signing &
+   Capabilities**, keep **Automatically manage signing** enabled, and select your
+   Personal Team or paid Apple Developer team.
+5. Select the connected iPhone as the run destination and press the Run button.
+
+After that one-time signing setup, reconnect the phone and run:
+
+```bash
+npm run ios:device
+```
+
+Always open `BioGlowFieldNotebook.xcworkspace`, not the similarly named
+`.xcodeproj`, because the workspace includes the installed native dependencies.
 
 ## Build installable apps with EAS Build
 

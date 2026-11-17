@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Alert,
   Image,
@@ -11,7 +11,13 @@ import {
 } from 'react-native';
 import * as Location from 'expo-location';
 import * as ImagePicker from 'expo-image-picker';
-import { Audio } from 'expo-av';
+import {
+  RecordingPresets,
+  requestRecordingPermissionsAsync,
+  setAudioModeAsync,
+  useAudioPlayer,
+  useAudioRecorder,
+} from 'expo-audio';
 import { GLOW_COLOURS } from '../templates';
 import type { FieldEntry, TemplateDef } from '../types';
 import { BigButton, COLORS, Chip, GlossyCard } from '../components/ui';
@@ -36,7 +42,8 @@ export function EntryFormScreen({
   const [photoUri, setPhotoUri] = useState<string | null>(null);
   const [voiceUri, setVoiceUri] = useState<string | null>(null);
   const [recording, setRecording] = useState(false);
-  const recordingRef = useRef<Audio.Recording | null>(null);
+  const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
+  const audioPlayer = useAudioPlayer(voiceUri);
 
   const setValue = (k: string, v: string) => setValues((prev) => ({ ...prev, [k]: v }));
   const labelSize = glove ? 18 : 15;
@@ -84,25 +91,20 @@ export function EntryFormScreen({
   async function toggleVoiceRecording() {
     try {
       if (recording) {
-        const rec = recordingRef.current;
-        recordingRef.current = null;
+        await audioRecorder.stop();
         setRecording(false);
-        if (rec) {
-          await rec.stopAndUnloadAsync();
-          setVoiceUri(rec.getURI());
-        }
+        setVoiceUri(audioRecorder.uri);
+        await setAudioModeAsync({ allowsRecording: false, playsInSilentMode: true });
         return;
       }
-      const perm = await Audio.requestPermissionsAsync();
+      const perm = await requestRecordingPermissionsAsync();
       if (!perm.granted) {
         Alert.alert('Microphone off', 'Permission was not given, so the voice note was not recorded. You can type notes instead.');
         return;
       }
-      await Audio.setAudioModeAsync({ allowsRecordingIOS: true, playsInSilentModeIOS: true });
-      const { recording: rec } = await Audio.Recording.createAsync(
-        Audio.RecordingOptionsPresets.HIGH_QUALITY,
-      );
-      recordingRef.current = rec;
+      await setAudioModeAsync({ allowsRecording: true, playsInSilentMode: true });
+      await audioRecorder.prepareToRecordAsync();
+      audioRecorder.record();
       setRecording(true);
     } catch {
       setRecording(false);
@@ -113,8 +115,8 @@ export function EntryFormScreen({
   async function playVoice() {
     if (!voiceUri) return;
     try {
-      const { sound } = await Audio.Sound.createAsync({ uri: voiceUri });
-      await sound.playAsync();
+      await audioPlayer.seekTo(0);
+      audioPlayer.play();
     } catch {
       Alert.alert('Playback unavailable', 'The voice note could not be played on this device.');
     }
