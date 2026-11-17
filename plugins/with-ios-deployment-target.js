@@ -80,23 +80,29 @@ module.exports = function withIosDeploymentTarget(config) {
   });
 
   nextConfig = withXcodeProject(nextConfig, (xcodeConfig) => {
+    const targetName = xcodeConfig.modRequest.projectName;
+
+    if (!targetName) {
+      throw new Error('Could not determine the generated iOS target name.');
+    }
+
     xcodeConfig.modResults.updateBuildProperty(
       'ENABLE_USER_SCRIPT_SANDBOXING',
       'NO',
       undefined,
-      'BioGlowFieldNotebook',
+      targetName,
     );
     xcodeConfig.modResults.updateBuildProperty(
       'OTHER_SWIFT_FLAGS',
       '"$(inherited) -D EXPO_CONFIGURATION_DEBUG -Xcc -Wno-incomplete-umbrella -Xcc -Wno-nullability-completeness"',
       'Debug',
-      'BioGlowFieldNotebook',
+      targetName,
     );
     xcodeConfig.modResults.updateBuildProperty(
       'OTHER_SWIFT_FLAGS',
       '"$(inherited) -D EXPO_CONFIGURATION_RELEASE -Xcc -Wno-incomplete-umbrella -Xcc -Wno-nullability-completeness"',
       'Release',
-      'BioGlowFieldNotebook',
+      targetName,
     );
 
     const phases = xcodeConfig.modResults.hash.project.objects.PBXShellScriptBuildPhase;
