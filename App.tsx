@@ -65,30 +65,39 @@ export default function App() {
     (async () => {
       const savedEntries = await loadEntries();
       const createdMedia: string[] = [];
+      let mediaReferencesChanged = false;
       let durableEntries = savedEntries;
       try {
         durableEntries = savedEntries.map((entry) => {
           let photoUri = entry.photoUri;
           let voiceUri = entry.voiceUri;
           try {
-            if (photoUri && !isManagedMediaUri(photoUri)) {
+            if (photoUri) {
+              const previousUri = photoUri;
+              const wasManaged = isManagedMediaUri(photoUri);
               photoUri = persistMediaFile(photoUri, entry.id, 'photo');
-              createdMedia.push(photoUri);
+              if (!wasManaged) createdMedia.push(photoUri);
+              if (photoUri !== previousUri) mediaReferencesChanged = true;
             }
           } catch {
             // Preserve the legacy URI if it cannot be copied during startup.
           }
           try {
-            if (voiceUri && !isManagedMediaUri(voiceUri)) {
+            if (voiceUri) {
+              const previousUri = voiceUri;
+              const wasManaged = isManagedMediaUri(voiceUri);
               voiceUri = persistMediaFile(voiceUri, entry.id, 'voice');
-              createdMedia.push(voiceUri);
+              if (!wasManaged) createdMedia.push(voiceUri);
+              if (voiceUri !== previousUri) mediaReferencesChanged = true;
             }
           } catch {
             // Preserve the legacy URI if it cannot be copied during startup.
           }
           return { ...entry, photoUri, voiceUri };
         });
-        if (createdMedia.length > 0) await saveEntries(durableEntries);
+        if (createdMedia.length > 0 || mediaReferencesChanged) {
+          await saveEntries(durableEntries);
+        }
       } catch {
         for (const uri of createdMedia) {
           try {
@@ -140,13 +149,15 @@ export default function App() {
     try {
       let photoUri = draft.photoUri;
       let voiceUri = draft.voiceUri;
-      if (photoUri && !isManagedMediaUri(photoUri)) {
+      if (photoUri) {
+        const wasManaged = isManagedMediaUri(photoUri);
         photoUri = persistMediaFile(photoUri, draft.id, 'photo');
-        createdMedia.push(photoUri);
+        if (!wasManaged) createdMedia.push(photoUri);
       }
-      if (voiceUri && !isManagedMediaUri(voiceUri)) {
+      if (voiceUri) {
+        const wasManaged = isManagedMediaUri(voiceUri);
         voiceUri = persistMediaFile(voiceUri, draft.id, 'voice');
-        createdMedia.push(voiceUri);
+        if (!wasManaged) createdMedia.push(voiceUri);
       }
 
       const saved = { ...draft, photoUri, voiceUri };

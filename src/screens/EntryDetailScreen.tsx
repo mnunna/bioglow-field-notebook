@@ -4,6 +4,7 @@ import { useAudioPlayer } from 'expo-audio';
 import { notebookByKey, templateByKey } from '../templates';
 import type { FieldEntry } from '../types';
 import { BigButton, COLORS, GlossyCard } from '../components/ui';
+import { resolveMediaUri } from '../media';
 
 export function EntryDetailScreen({
   entry,
@@ -22,7 +23,7 @@ export function EntryDetailScreen({
 }) {
   const template = templateByKey(entry.templateKey);
   const notebook = notebookByKey(entry.notebookKey);
-  const audioPlayer = useAudioPlayer(entry.voiceUri);
+  const audioPlayer = useAudioPlayer(entry.voiceUri ? resolveMediaUri(entry.voiceUri) : null);
 
   async function playVoice() {
     if (!entry.voiceUri) return;
@@ -44,7 +45,9 @@ export function EntryDetailScreen({
         {new Date(entry.createdAt).toLocaleString()}
       </Text>
 
-      {entry.photoUri ? <Image source={{ uri: entry.photoUri }} style={styles.photo} /> : null}
+      {entry.photoUri ? (
+        <Image source={{ uri: resolveMediaUri(entry.photoUri) }} style={styles.photo} />
+      ) : null}
 
       <GlossyCard style={{ marginTop: 16 }}>
         {template.fields.map((f) => {

@@ -1,6 +1,6 @@
 import type { FieldEntry, NotebookKey, TemplateKey } from './types';
 
-export const FIELD_ENTRY_SCHEMA_VERSION = 2 as const;
+export const FIELD_ENTRY_SCHEMA_VERSION = 3 as const;
 
 const TEMPLATE_KEYS = new Set<TemplateKey>([
   'plant',

@@ -20,7 +20,7 @@ test('migrates an original unversioned entry without losing its media', () => {
   });
 
   assert.ok(migrated);
-  assert.equal(migrated.schemaVersion, 2);
+  assert.equal(migrated.schemaVersion, 3);
   assert.equal(migrated.updatedAt, migrated.createdAt);
   assert.equal(migrated.horizontalAccuracy, null);
   assert.equal(migrated.photoUri, 'file:///old-photo.jpg');

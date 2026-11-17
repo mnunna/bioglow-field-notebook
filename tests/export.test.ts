@@ -7,7 +7,7 @@ import type { FieldEntry } from '../src/types';
 
 function entry(overrides: Partial<FieldEntry> = {}): FieldEntry {
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     id: 'entry-1',
     templateKey: 'animal',
     notebookKey: 'species',

@@ -42,7 +42,7 @@ export interface NotebookDef {
 }
 
 export interface FieldEntry {
-  schemaVersion: 2;
+  schemaVersion: 3;
   id: string;
   templateKey: TemplateKey;
   notebookKey: NotebookKey;
@@ -55,8 +55,9 @@ export interface FieldEntry {
   /** Horizontal GPS uncertainty reported by the device, in metres. */
   horizontalAccuracy: number | null;
   locationLabel: string;
+  /** Stable managed-media reference, temporary picker URI while editing, or null. */
   photoUri: string | null;
-  /** Local file URI of a recorded voice note (expo-audio), or null */
+  /** Stable managed-media reference, temporary recorder URI while editing, or null. */
   voiceUri: string | null;
   starred: boolean;
   createdAt: string; // ISO string

@@ -25,6 +25,7 @@ import type { FieldEntry, TemplateDef } from '../types';
 import { BigButton, COLORS, Chip, GlossyCard } from '../components/ui';
 import { FIELD_ENTRY_SCHEMA_VERSION } from '../entryModel';
 import { newId } from '../storage';
+import { resolveMediaUri } from '../media';
 
 export function EntryFormScreen({
   template,
@@ -61,7 +62,7 @@ export function EntryFormScreen({
   const [photoActionPending, setPhotoActionPending] = useState(false);
   const photoActionPendingRef = useRef(false);
   const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
-  const audioPlayer = useAudioPlayer(voiceUri);
+  const audioPlayer = useAudioPlayer(voiceUri ? resolveMediaUri(voiceUri) : null);
 
   const setValue = (k: string, v: string) => setValues((prev) => ({ ...prev, [k]: v }));
   const labelSize = glove ? 18 : 15;
@@ -347,7 +348,7 @@ export function EntryFormScreen({
           />
         </View>
       </View>
-      {photoUri ? <Image source={{ uri: photoUri }} style={styles.photo} /> : null}
+      {photoUri ? <Image source={{ uri: resolveMediaUri(photoUri) }} style={styles.photo} /> : null}
       {photoUri ? (
         <View style={{ marginTop: 8 }}>
           <BigButton title="Remove photo" glove={glove} variant="ghost" onPress={() => setPhotoUri(null)} />
