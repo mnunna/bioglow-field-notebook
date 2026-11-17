@@ -3,6 +3,29 @@ const { withPodfile, withXcodeProject } = require('@expo/config-plugins');
 const MARKER = '# BioGlow: keep every CocoaPods target compatible with current Xcode';
 const PATH_MARKER = '# BioGlow: quote the Expo Constants script when the project path has spaces';
 const WARNINGS_MARKER = '# BioGlow: keep third-party warnings out of the app build';
+const DEVICE_BUNDLE_MARKER = '# Eco Note: embed an offline bundle for physical-device Debug builds';
+const DEFAULT_DEBUG_BUNDLING =
+  'if [[ \\"$CONFIGURATION\\" = *Debug* ]]; then\\n  export SKIP_BUNDLING=1\\nfi';
+const DEVICE_DEBUG_BUNDLING_V1 = `${DEVICE_BUNDLE_MARKER}
+if [[ \\"$CONFIGURATION\\" = *Debug* && \\"$PLATFORM_NAME\\" == *simulator* ]]; then\\n  export SKIP_BUNDLING=1\\nelse\\n  unset SKIP_BUNDLING\\nfi`;
+const DEVICE_DEBUG_BUNDLING = `${DEVICE_BUNDLE_MARKER}
+if [[ \\"$CONFIGURATION\\" = *Debug* && \\"$PLATFORM_NAME\\" == *simulator* ]]; then\\n  export SKIP_BUNDLING=1\\nelse\\n  unset SKIP_BUNDLING\\n  export EXTRA_PACKAGER_ARGS=\\"\${EXTRA_PACKAGER_ARGS:-} --dev false\\"\\nfi`;
+
+function configureBundlePhaseScript(shellScript) {
+  if (shellScript.includes(DEVICE_DEBUG_BUNDLING)) return shellScript;
+
+  if (shellScript.includes(DEVICE_DEBUG_BUNDLING_V1)) {
+    return shellScript.replace(DEVICE_DEBUG_BUNDLING_V1, DEVICE_DEBUG_BUNDLING);
+  }
+
+  if (!shellScript.includes(DEFAULT_DEBUG_BUNDLING)) {
+    throw new Error(
+      'Could not configure the iOS Debug build to include an offline JavaScript bundle.',
+    );
+  }
+
+  return shellScript.replace(DEFAULT_DEBUG_BUNDLING, DEVICE_DEBUG_BUNDLING);
+}
 
 module.exports = function withIosDeploymentTarget(config) {
   let nextConfig = withPodfile(config, (podfileConfig) => {
@@ -112,8 +135,13 @@ module.exports = function withIosDeploymentTarget(config) {
       'REACT_NATIVE_XCODE_SCRIPT=\\"$(\\"$NODE_BINARY\\" --print \\"require(\'path\').dirname(require.resolve(\'react-native/package.json\')) + \'/scripts/react-native-xcode.sh\'\\")\\"\\n\\"$REACT_NATIVE_XCODE_SCRIPT\\"';
     const wrapperCommand = '\\"$PROJECT_ROOT/scripts/run-react-native-xcode.sh\\"';
 
+    let foundBundlePhase = false;
+
     for (const phase of Object.values(phases)) {
       if (phase?.name !== '"Bundle React Native code and images"') continue;
+
+      foundBundlePhase = true;
+      phase.shellScript = configureBundlePhaseScript(phase.shellScript);
 
       if (phase.shellScript?.includes(legacyCommand)) {
         phase.shellScript = phase.shellScript.replace(legacyCommand, wrapperCommand);
@@ -122,8 +150,14 @@ module.exports = function withIosDeploymentTarget(config) {
       }
     }
 
+    if (!foundBundlePhase) {
+      throw new Error('Could not find the iOS JavaScript bundle build phase.');
+    }
+
     return xcodeConfig;
   });
 
   return nextConfig;
 };
+
+module.exports.configureBundlePhaseScript = configureBundlePhaseScript;

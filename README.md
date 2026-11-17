@@ -119,6 +119,11 @@ After that one-time signing setup, reconnect the phone and run:
 npm run ios:device
 ```
 
+Physical-iPhone Debug builds include a production-mode JavaScript fallback. Metro is
+still used when it is running, but reopening the installed app later does not require
+the development server or try to start embedded DevTools. Simulator Debug builds
+continue to use Metro only.
+
 Always open `EcoNote.xcworkspace`, not the similarly named
 `.xcodeproj`, because the workspace includes the installed native dependencies.
 
