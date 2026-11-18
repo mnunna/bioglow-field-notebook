@@ -39,6 +39,7 @@
     "ios": "expo run:ios",
     "ios:device": "expo run:ios --device --configuration Release --no-bundler",
     "ios:device:dev": "expo run:ios --device",
+    "postinstall": "node scripts/patch-expo-ios.js",
     "start": "expo start",
     "test": "tsx --test tests/*.test.ts",
     "typecheck": "tsc --noEmit",

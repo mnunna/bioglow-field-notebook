@@ -1,6 +1,7 @@
 const { withPodfile, withXcodeProject } = require('@expo/config-plugins');
 
 const MARKER = '# BioGlow: keep every CocoaPods target compatible with current Xcode';
+const SWIFT_LIBS_MARKER = '# BioGlow: do not embed Swift libraries in the static Pods target';
 const PATH_MARKER = '# BioGlow: quote the Expo Constants script when the project path has spaces';
 const WARNINGS_MARKER = '# BioGlow: keep third-party warnings out of the app build';
 const DEVICE_BUNDLE_MARKER = '# Eco Note: embed an offline bundle for physical-device Debug builds';
@@ -87,6 +88,10 @@ module.exports = function withIosDeploymentTarget(config) {
           podfile_properties['ios.deploymentTarget'] || '17.0'
         build_config.build_settings['OTHER_LIBTOOLFLAGS'] =
           '$(inherited) -no_warning_for_no_symbols'
+
+        if target.name.start_with?('Pods-')
+          build_config.build_settings['ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES'] = 'NO'
+        end
       end
 
       if target.name == 'hermes-engine'
@@ -95,6 +100,18 @@ module.exports = function withIosDeploymentTarget(config) {
 
           phase.always_out_of_date = '1'
         end
+      end
+    end`);
+    }
+
+    if (!podfile.includes(SWIFT_LIBS_MARKER)) {
+      additions.push(`
+
+    ${SWIFT_LIBS_MARKER}
+    installer.aggregate_targets.each do |aggregate_target|
+      aggregate_target.xcconfigs.each do |config_name, xcconfig|
+        xcconfig.attributes['ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES'] = 'NO'
+        xcconfig.save_as(aggregate_target.xcconfig_path(config_name))
       end
     end`);
     }

@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const { configureBundleCommand, configureBundlePhaseScript } = require('../plugins/with-ios-deployment-target') as {
@@ -56,4 +57,37 @@ test('native generation fails if Expo changes the protected bundle command', () 
     () => configureBundleCommand('an unexpected build phase'),
     /path-safe iOS JavaScript bundle command/,
   );
+});
+
+test('generated CocoaPods static targets do not try to embed Swift libraries', () => {
+  const pluginSource = readFileSync('plugins/with-ios-deployment-target.js', 'utf8');
+
+  assert.match(
+    pluginSource,
+    /target\.name\.start_with\?\('Pods-'\)[\s\S]*ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES'\] = 'NO'/,
+  );
+  assert.match(
+    pluginSource,
+    /aggregate_target\.xcconfigs[\s\S]*ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES'\] = 'NO'/,
+  );
+});
+
+test('ExpoAudio session setup runs off the main thread after install', () => {
+  const patchScript = readFileSync('scripts/patch-expo-ios.js', 'utf8');
+  const audioModule = readFileSync('node_modules/expo-audio/ios/AudioModule.swift', 'utf8');
+
+  assert.match(patchScript, /prepareToRecordAsync[\s\S]*runOnQueue\(sessionQueue\)/);
+  assert.match(audioModule, /setAudioModeAsync[\s\S]*runOnQueue\(sessionQueue\)/);
+  assert.match(audioModule, /setIsAudioActiveAsync[\s\S]*runOnQueue\(sessionQueue\)/);
+  assert.match(audioModule, /prepareToRecordAsync[\s\S]*runOnQueue\(sessionQueue\)/);
+});
+
+test('the manually registered Expo core module is excluded from generated autolinking', () => {
+  const coreModule = readFileSync(
+    'node_modules/expo/node_modules/expo-modules-core/ios/Core/Modules/CoreModule.swift',
+    'utf8',
+  );
+
+  assert.ok(!coreModule.includes('@ExpoModule'));
+  assert.match(coreModule, /internal final class CoreModule/);
 });
