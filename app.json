@@ -35,7 +35,6 @@
       "buildNumber": "1"
     },
     "name": "Eco Note",
-    "newArchEnabled": true,
     "orientation": "portrait",
     "plugins": [
       [
@@ -52,13 +51,13 @@
         }
       ],
       [
-        "expo-camera",
+        "expo-audio",
         {
-          "cameraPermission": "Eco Note uses the camera to photograph field findings.",
-          "recordAudioAndroid": false
+          "microphonePermission": "Eco Note uses the microphone only when you record a voice note.",
+          "enableBackgroundPlayback": false,
+          "enableBackgroundRecording": false
         }
       ],
-      "expo-audio",
       [
         "expo-build-properties",
         {
@@ -68,17 +67,21 @@
         }
       ],
       "./plugins/with-ios-deployment-target",
-      "./plugins/with-ios-scene-lifecycle"
+      "expo-asset",
+      "expo-sharing",
+      "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#06231a",
+          "image": "./assets/splash-icon.png",
+          "resizeMode": "contain"
+        }
+      ]
     ],
     "scheme": "bioglow",
     "slug": "bioglow-field-notebook",
-    "splash": {
-      "backgroundColor": "#06231a",
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain"
-    },
     "userInterfaceStyle": "dark",
-    "version": "1.0.0",
-    "privacy": "unlisted"
+    "version": "1.0.0"
   }
 }

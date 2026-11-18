@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-const { configureBundlePhaseScript } = require('../plugins/with-ios-deployment-target') as {
+const { configureBundleCommand, configureBundlePhaseScript } = require('../plugins/with-ios-deployment-target') as {
+  configureBundleCommand: (shellScript: string) => string;
   configureBundlePhaseScript: (shellScript: string) => string;
 };
 
@@ -36,4 +37,23 @@ test('native generation upgrades the original offline bundle guard', () => {
 
   assert.match(configured, /EXTRA_PACKAGER_ARGS=.*--dev false/);
   assert.ok(!configured.endsWith('unset SKIP_BUNDLING\\nfi'));
+});
+
+test('iOS bundle wrapper remains executable when the repository path has spaces', () => {
+  const expoCommand =
+    '\\"`\\"$NODE_BINARY\\" --print \\"require(\'path\').dirname(require.resolve(\'react-native/package.json\')) + \'/scripts/react-native-xcode.sh\'\\"`\\"';
+
+  const configured = configureBundleCommand(`before\\n${expoCommand}\\nafter`);
+
+  assert.match(configured, /bash \.\.\/scripts\/run-react-native-xcode\.sh/);
+  assert.ok(!configured.includes('\\"bash ../scripts/run-react-native-xcode.sh\\"'));
+  assert.ok(!configured.includes('$PROJECT_ROOT/scripts/run-react-native-xcode.sh'));
+  assert.equal(configureBundleCommand(configured), configured);
+});
+
+test('native generation fails if Expo changes the protected bundle command', () => {
+  assert.throws(
+    () => configureBundleCommand('an unexpected build phase'),
+    /path-safe iOS JavaScript bundle command/,
+  );
 });

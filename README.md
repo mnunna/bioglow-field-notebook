@@ -93,8 +93,8 @@ npm test            # storage migration and export checks
 
 ## Install directly on an iPhone with Xcode
 
-This creates a normal development app on the iPhone, with the camera, GPS and
-microphone features available for testing.
+This creates a standalone Release app on the iPhone, with the camera, GPS and
+microphone features available without Metro or a JavaScript development banner.
 
 1. Connect the unlocked iPhone to the Mac with a data-capable cable, tap **Trust**
    on both devices if asked, and enable **Developer Mode** on the iPhone if iOS
@@ -111,7 +111,8 @@ microphone features available for testing.
 4. In Xcode, select the **EcoNote** app target, open **Signing &
    Capabilities**, keep **Automatically manage signing** enabled, and select your
    Personal Team or paid Apple Developer team.
-5. Select the connected iPhone as the run destination and press the Run button.
+5. Use Xcode to configure signing once. For an everyday install without development
+   UI, use the Release command below rather than Xcode's default Debug Run action.
 
 After that one-time signing setup, reconnect the phone and run:
 
@@ -119,10 +120,10 @@ After that one-time signing setup, reconnect the phone and run:
 npm run ios:device
 ```
 
-Physical-iPhone Debug builds include a production-mode JavaScript fallback. Metro is
-still used when it is running, but reopening the installed app later does not require
-the development server or try to start embedded DevTools. Simulator Debug builds
-continue to use Metro only.
+`npm run ios:device` builds Release with an embedded JavaScript bundle and does not
+leave a Metro development server running. For live JavaScript development, use
+`npm run ios:device:dev`; that Debug build intentionally starts Metro and shows
+React Native development UI.
 
 Always open `EcoNote.xcworkspace`, not the similarly named
 `.xcodeproj`, because the workspace includes the installed native dependencies.

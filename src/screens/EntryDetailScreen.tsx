@@ -1,6 +1,6 @@
 import React from 'react';
 import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useAudioPlayer } from 'expo-audio';
+import { setAudioModeAsync, useAudioPlayer } from 'expo-audio';
 import { LinearGradient } from 'expo-linear-gradient';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { notebookByKey, templateByKey } from '../templates';
@@ -28,6 +28,7 @@ export function EntryDetailScreen({
   async function playVoice() {
     if (!entry.voiceUri) return;
     try {
+      await setAudioModeAsync({ allowsRecording: false, playsInSilentMode: true });
       await audioPlayer.seekTo(0);
       audioPlayer.play();
     } catch {

@@ -27,6 +27,30 @@ function configureBundlePhaseScript(shellScript) {
   return shellScript.replace(DEFAULT_DEBUG_BUNDLING, DEVICE_DEBUG_BUNDLING);
 }
 
+function configureBundleCommand(shellScript) {
+  const legacyCommand =
+    '`\\"$NODE_BINARY\\" --print \\"require(\'path\').dirname(require.resolve(\'react-native/package.json\')) + \'/scripts/react-native-xcode.sh\'\\"`';
+  const pathSafeCommand =
+    'REACT_NATIVE_XCODE_SCRIPT=\\"$(\\"$NODE_BINARY\\" --print \\"require(\'path\').dirname(require.resolve(\'react-native/package.json\')) + \'/scripts/react-native-xcode.sh\'\\")\\"\\n\\"$REACT_NATIVE_XCODE_SCRIPT\\"';
+  const quotedLegacyCommand = `\\"${legacyCommand}\\"`;
+  // Xcode runs this phase from the generated ios directory. Keeping this path
+  // relative avoids another quoting layer when the repository path has spaces.
+  const wrapperCommand = 'bash ../scripts/run-react-native-xcode.sh';
+
+  if (shellScript.includes(wrapperCommand)) return shellScript;
+  if (shellScript.includes(quotedLegacyCommand)) {
+    return shellScript.replace(quotedLegacyCommand, wrapperCommand);
+  }
+  if (shellScript.includes(legacyCommand)) {
+    return shellScript.replace(legacyCommand, wrapperCommand);
+  }
+  if (shellScript.includes(pathSafeCommand)) {
+    return shellScript.replace(pathSafeCommand, wrapperCommand);
+  }
+
+  throw new Error('Could not configure the path-safe iOS JavaScript bundle command.');
+}
+
 module.exports = function withIosDeploymentTarget(config) {
   let nextConfig = withPodfile(config, (podfileConfig) => {
     let podfile = podfileConfig.modResults.contents;
@@ -129,12 +153,6 @@ module.exports = function withIosDeploymentTarget(config) {
     );
 
     const phases = xcodeConfig.modResults.hash.project.objects.PBXShellScriptBuildPhase;
-    const legacyCommand =
-      '`\\"$NODE_BINARY\\" --print \\"require(\'path\').dirname(require.resolve(\'react-native/package.json\')) + \'/scripts/react-native-xcode.sh\'\\"`';
-    const pathSafeCommand =
-      'REACT_NATIVE_XCODE_SCRIPT=\\"$(\\"$NODE_BINARY\\" --print \\"require(\'path\').dirname(require.resolve(\'react-native/package.json\')) + \'/scripts/react-native-xcode.sh\'\\")\\"\\n\\"$REACT_NATIVE_XCODE_SCRIPT\\"';
-    const wrapperCommand = '\\"$PROJECT_ROOT/scripts/run-react-native-xcode.sh\\"';
-
     let foundBundlePhase = false;
 
     for (const phase of Object.values(phases)) {
@@ -142,12 +160,7 @@ module.exports = function withIosDeploymentTarget(config) {
 
       foundBundlePhase = true;
       phase.shellScript = configureBundlePhaseScript(phase.shellScript);
-
-      if (phase.shellScript?.includes(legacyCommand)) {
-        phase.shellScript = phase.shellScript.replace(legacyCommand, wrapperCommand);
-      } else if (phase.shellScript?.includes(pathSafeCommand)) {
-        phase.shellScript = phase.shellScript.replace(pathSafeCommand, wrapperCommand);
-      }
+      phase.shellScript = configureBundleCommand(phase.shellScript);
     }
 
     if (!foundBundlePhase) {
@@ -161,3 +174,4 @@ module.exports = function withIosDeploymentTarget(config) {
 };
 
 module.exports.configureBundlePhaseScript = configureBundlePhaseScript;
+module.exports.configureBundleCommand = configureBundleCommand;

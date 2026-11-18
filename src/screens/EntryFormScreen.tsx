@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
   Alert,
   Image,
-  InteractionManager,
   Keyboard,
   KeyboardAvoidingView,
   Linking,
@@ -13,13 +12,12 @@ import {
   Text,
   TextInput,
   View,
+  type TextInputInstance,
 } from 'react-native';
 import * as Location from 'expo-location';
 import * as ImagePicker from 'expo-image-picker';
-import { Camera } from 'expo-camera';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
-  RecordingPresets,
   requestRecordingPermissionsAsync,
   setAudioModeAsync,
   useAudioPlayer,
@@ -28,10 +26,14 @@ import {
 import { GLOW_COLOURS } from '../templates';
 import type { FieldEntry, TemplateDef } from '../types';
 import { BigButton, COLORS, Chip, GlossyCard } from '../components/ui';
-import { CameraCaptureModal } from '../components/CameraCaptureModal';
 import { FIELD_ENTRY_SCHEMA_VERSION } from '../entryModel';
 import { newId } from '../storage';
 import { resolveMediaUri } from '../media';
+import {
+  findBuiltInMicrophone,
+  isUsableVoiceRecording,
+  voiceRecordingOptions,
+} from '../mediaCapture';
 
 export function EntryFormScreen({
   template,
@@ -47,7 +49,7 @@ export function EntryFormScreen({
   onCancel: () => void;
 }) {
   const entryId = useRef(initialEntry?.id ?? newId()).current;
-  const titleInputRef = useRef<TextInput>(null);
+  const titleInputRef = useRef<TextInputInstance>(null);
   const [title, setTitle] = useState(initialEntry?.title ?? '');
   const [values, setValues] = useState<Record<string, string>>(
     initialEntry?.values ?? (template.fields.some((field) => field.type === 'brightness') ? { brightness: '3' } : {}),
@@ -65,11 +67,12 @@ export function EntryFormScreen({
   const [photoUri, setPhotoUri] = useState<string | null>(initialEntry?.photoUri ?? null);
   const [voiceUri, setVoiceUri] = useState<string | null>(initialEntry?.voiceUri ?? null);
   const [recording, setRecording] = useState(false);
+  const [recordingSeconds, setRecordingSeconds] = useState(0);
   const [saving, setSaving] = useState(false);
   const [photoActionPending, setPhotoActionPending] = useState(false);
-  const [cameraOpen, setCameraOpen] = useState(false);
   const photoActionPendingRef = useRef(false);
-  const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
+  const loudestMeteringRef = useRef<number | null>(null);
+  const audioRecorder = useAudioRecorder(voiceRecordingOptions(Platform.OS));
   const audioPlayer = useAudioPlayer(voiceUri ? resolveMediaUri(voiceUri) : null);
 
   const setValue = (k: string, v: string) => setValues((prev) => ({ ...prev, [k]: v }));
@@ -79,11 +82,28 @@ export function EntryFormScreen({
   useEffect(() => {
     if (initialEntry) return;
 
-    const focusTask = InteractionManager.runAfterInteractions(() => {
+    const frame = requestAnimationFrame(() => {
       titleInputRef.current?.focus();
     });
-    return () => focusTask.cancel();
+    return () => cancelAnimationFrame(frame);
   }, [initialEntry]);
+
+  useEffect(() => {
+    if (!recording) return;
+
+    setRecordingSeconds(0);
+    const timer = setInterval(() => {
+      const status = audioRecorder.getStatus();
+      setRecordingSeconds(Math.floor(status.durationMillis / 1000));
+      if (status.metering != null) {
+        loudestMeteringRef.current = Math.max(
+          loudestMeteringRef.current ?? Number.NEGATIVE_INFINITY,
+          status.metering,
+        );
+      }
+    }, 100);
+    return () => clearInterval(timer);
+  }, [audioRecorder, recording]);
 
   async function useLocation() {
     try {
@@ -113,10 +133,10 @@ export function EntryFormScreen({
     Keyboard.dismiss();
 
     try {
-      let perm = await Camera.getCameraPermissionsAsync();
+      let perm = await ImagePicker.getCameraPermissionsAsync();
 
       if (!perm.granted && perm.canAskAgain) {
-        perm = await Camera.requestCameraPermissionsAsync();
+        perm = await ImagePicker.requestCameraPermissionsAsync();
       }
 
       if (!perm.granted) {
@@ -135,7 +155,15 @@ export function EntryFormScreen({
         );
         return;
       }
-      setCameraOpen(true);
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ['images'],
+        allowsEditing: false,
+        quality: 0.7,
+        cameraType: ImagePicker.CameraType.back,
+      });
+      if (!result.canceled && result.assets[0]) {
+        setPhotoUri(result.assets[0].uri);
+      }
     } catch {
       Alert.alert('Camera unavailable', 'The camera did not open on this device.');
     } finally {
@@ -193,9 +221,28 @@ export function EntryFormScreen({
   async function toggleVoiceRecording() {
     try {
       if (recording) {
+        const statusBeforeStop = audioRecorder.getStatus();
+        if (statusBeforeStop.metering != null) {
+          loudestMeteringRef.current = Math.max(
+            loudestMeteringRef.current ?? Number.NEGATIVE_INFINITY,
+            statusBeforeStop.metering,
+          );
+        }
         await audioRecorder.stop();
+        const statusAfterStop = audioRecorder.getStatus();
         setRecording(false);
-        setVoiceUri(audioRecorder.uri);
+        const uri = audioRecorder.uri ?? statusAfterStop.url ?? statusBeforeStop.url;
+        if (
+          !uri ||
+          !isUsableVoiceRecording({
+            duration: statusBeforeStop.durationMillis / 1000,
+            size: statusAfterStop.fileSize,
+            loudestMetering: loudestMeteringRef.current,
+          })
+        ) {
+          throw new Error('The recording did not contain audio.');
+        }
+        setVoiceUri(uri);
         await setAudioModeAsync({ allowsRecording: false, playsInSilentMode: true });
         return;
       }
@@ -206,10 +253,24 @@ export function EntryFormScreen({
       }
       await setAudioModeAsync({ allowsRecording: true, playsInSilentMode: true });
       await audioRecorder.prepareToRecordAsync();
+      if (Platform.OS === 'ios') {
+        const builtInMicrophone = findBuiltInMicrophone(audioRecorder.getAvailableInputs());
+        if (!builtInMicrophone) {
+          throw new Error('The built-in microphone was not available.');
+        }
+        audioRecorder.setInput(builtInMicrophone.uid);
+      }
+      loudestMeteringRef.current = null;
       audioRecorder.record();
       setRecording(true);
     } catch {
+      if (audioRecorder.isRecording) {
+        await audioRecorder.stop().catch(() => undefined);
+      }
       setRecording(false);
+      await setAudioModeAsync({ allowsRecording: false, playsInSilentMode: true }).catch(
+        () => undefined,
+      );
       Alert.alert('Voice note unavailable', 'Recording did not start on this device. You can type notes instead.');
     }
   }
@@ -217,6 +278,7 @@ export function EntryFormScreen({
   async function playVoice() {
     if (!voiceUri) return;
     try {
+      await setAudioModeAsync({ allowsRecording: false, playsInSilentMode: true });
       await audioPlayer.seekTo(0);
       audioPlayer.play();
     } catch {
@@ -427,7 +489,13 @@ export function EntryFormScreen({
 
       <Text style={[styles.label, { fontSize: labelSize }]}>Voice note (real recording, stored on phone)</Text>
       <BigButton
-        title={recording ? '⏹️ Stop recording' : voiceUri ? '🎙️ Re-record voice note' : '🎙️ Record voice note'}
+        title={
+          recording
+            ? `⏹️ Stop recording (${recordingSeconds}s)`
+            : voiceUri
+              ? '🎙️ Re-record voice note'
+              : '🎙️ Record voice note'
+        }
         glove={glove}
         variant="ghost"
         onPress={toggleVoiceRecording}
@@ -462,15 +530,6 @@ export function EntryFormScreen({
       </GlossyCard>
       <View style={{ height: 28 }} />
       </ScrollView>
-      <CameraCaptureModal
-        visible={cameraOpen}
-        glove={glove}
-        onClose={() => setCameraOpen(false)}
-        onCapture={(uri) => {
-          setPhotoUri(uri);
-          setCameraOpen(false);
-        }}
-      />
     </KeyboardAvoidingView>
   );
 }

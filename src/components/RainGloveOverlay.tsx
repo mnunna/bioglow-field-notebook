@@ -114,7 +114,7 @@ export function RainGloveOverlay({ visible }: { visible: boolean }) {
 }
 
 const styles = StyleSheet.create({
-  overlay: { ...StyleSheet.absoluteFillObject, zIndex: 50, elevation: 50 },
+  overlay: { ...StyleSheet.absoluteFill, zIndex: 50, elevation: 50 },
   fill: { flex: 1, overflow: 'hidden' },
   drop: {
     position: 'absolute',
