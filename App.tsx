@@ -34,6 +34,7 @@ import { CaptureScreen } from './src/screens/CaptureScreen';
 import { EntryFormScreen } from './src/screens/EntryFormScreen';
 import { NotebookScreen } from './src/screens/NotebookScreen';
 import { EntryDetailScreen } from './src/screens/EntryDetailScreen';
+import { ObservationMapScreen } from './src/screens/ObservationMapScreen';
 import { MoreScreen } from './src/screens/MoreScreen';
 import { InfoScreen } from './src/screens/InfoScreen';
 import { TriviaScreen } from './src/screens/TriviaScreen';
@@ -48,6 +49,7 @@ type RootStackParamList = {
   Tabs: undefined;
   Form: { template: TemplateDef; entryId?: string };
   Detail: { entryId: string };
+  ObservationMap: undefined;
   Info: undefined;
   Trivia: undefined;
 };
@@ -449,6 +451,7 @@ export default function App() {
                         onToggleGlove={toggleGlove}
                         onStartCapture={() => setTab('capture')}
                         onExport={shareResearchArchive}
+                        onOpenMap={() => navigation.navigate('ObservationMap')}
                         onOpen={(entry) => navigation.navigate('Detail', { entryId: entry.id })}
                         sampleEntryCount={entries.filter(isSampleEntry).length}
                         sampleDataPending={sampleDataPending}
@@ -471,6 +474,7 @@ export default function App() {
                         onOpen={(entry) => navigation.navigate('Detail', { entryId: entry.id })}
                         onToggleStar={toggleStar}
                         onExport={shareResearchArchive}
+                        onOpenMap={() => navigation.navigate('ObservationMap')}
                       />
                     ) : (
                       <MoreScreen
@@ -555,6 +559,17 @@ export default function App() {
                 </SafeAreaView>
               );
             }}
+          </Stack.Screen>
+          <Stack.Screen name="ObservationMap" options={{ title: 'Observation Map' }}>
+            {({ navigation }) => (
+              <SafeAreaView style={styles.root} edges={['bottom']}>
+                <ObservationMapScreen
+                  entries={entries}
+                  glove={glove}
+                  onOpen={(entry) => navigation.navigate('Detail', { entryId: entry.id })}
+                />
+              </SafeAreaView>
+            )}
           </Stack.Screen>
           <Stack.Screen name="Info" options={{ title: 'Info & how to use' }}>
             {() => (

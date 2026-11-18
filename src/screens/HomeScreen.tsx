@@ -86,6 +86,7 @@ export function HomeScreen({
   onToggleGlove,
   onStartCapture,
   onExport,
+  onOpenMap,
   onOpen,
   sampleEntryCount,
   sampleDataPending,
@@ -97,6 +98,7 @@ export function HomeScreen({
   onToggleGlove: (value: boolean) => void;
   onStartCapture: () => void;
   onExport: () => void;
+  onOpenMap: () => void;
   onOpen: (entry: FieldEntry) => void;
   sampleEntryCount: number;
   sampleDataPending: boolean;
@@ -161,6 +163,9 @@ export function HomeScreen({
 
       <View style={styles.captureAction}>
         <BigButton title="＋ New field note" glove={glove} onPress={onStartCapture} />
+        <View style={styles.secondaryAction}>
+          <BigButton title="⌖ Observation map" glove={glove} variant="ghost" onPress={onOpenMap} />
+        </View>
         {historyEntries.length > 0 ? (
           <View style={styles.exportAction}>
             <BigButton title="⇧ Export research ZIP" glove={glove} variant="ghost" onPress={onExport} />
@@ -310,6 +315,7 @@ const styles = StyleSheet.create({
   entryCountValue: { color: COLORS.lime, fontSize: 20, fontWeight: '900' },
   entryCountLabel: { color: COLORS.muted, fontSize: 11, marginTop: 1 },
   captureAction: { marginTop: 18 },
+  secondaryAction: { marginTop: 8 },
   exportAction: { marginTop: 8 },
   sectionHeader: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', marginTop: 24, marginBottom: 10 },
   sectionTitle: { color: COLORS.text, fontSize: 18, fontWeight: '900' },

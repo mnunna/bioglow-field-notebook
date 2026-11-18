@@ -98,6 +98,7 @@ export function NotebookScreen({
   onOpen,
   onToggleStar,
   onExport,
+  onOpenMap,
 }: {
   entries: FieldEntry[];
   glove: boolean;
@@ -108,6 +109,7 @@ export function NotebookScreen({
   onOpen: (entry: FieldEntry) => void;
   onToggleStar: (entry: FieldEntry) => void;
   onExport: () => void;
+  onOpenMap: () => void;
 }) {
   const archivedEntries = useMemo(
     () => entries.filter((entry) => entry.exportedAt !== null),
@@ -132,15 +134,21 @@ export function NotebookScreen({
   return (
     <ScrollView contentContainerStyle={styles.wrap} keyboardShouldPersistTaps="handled">
       <View style={styles.header}>
-        <View>
+        <View style={styles.headerCopy}>
           <Text style={styles.eyebrow}>FIELD ARCHIVE</Text>
           <Text style={[styles.heading, glove && styles.headingGlove]}>Your observations</Text>
           <Text style={[styles.sub, glove && styles.subGlove]}>{archivedEntries.length} exported and saved on this phone</Text>
         </View>
-        <Pressable onPress={onExport} style={({ pressed }) => [styles.exportButton, glove && styles.exportButtonGlove, pressed && styles.pressed]}>
-          <Text style={[styles.exportIcon, glove && styles.exportIconGlove]}>⇧</Text>
-          <Text style={[styles.exportText, glove && styles.exportTextGlove]}>Export</Text>
-        </Pressable>
+        <View style={styles.headerActions}>
+          <Pressable onPress={onOpenMap} style={({ pressed }) => [styles.exportButton, glove && styles.exportButtonGlove, pressed && styles.pressed]}>
+            <Text style={[styles.mapIcon, glove && styles.exportIconGlove]}>⌖</Text>
+            <Text style={[styles.exportText, glove && styles.exportTextGlove]}>Map</Text>
+          </Pressable>
+          <Pressable onPress={onExport} style={({ pressed }) => [styles.exportButton, glove && styles.exportButtonGlove, pressed && styles.pressed]}>
+            <Text style={[styles.exportIcon, glove && styles.exportIconGlove]}>⇧</Text>
+            <Text style={[styles.exportText, glove && styles.exportTextGlove]}>Export</Text>
+          </Pressable>
+        </View>
       </View>
 
       <View style={[styles.searchWrap, glove && styles.searchWrapGlove]}>
@@ -212,6 +220,8 @@ export function NotebookScreen({
 const styles = StyleSheet.create({
   wrap: { paddingHorizontal: 16, paddingTop: 12 },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 },
+  headerCopy: { flex: 1, minWidth: 0 },
+  headerActions: { flexDirection: 'row', gap: 8 },
   eyebrow: { color: COLORS.muted, fontSize: 11, fontWeight: '800', letterSpacing: 1.3 },
   heading: { color: COLORS.text, fontSize: 28, lineHeight: 33, fontWeight: '900', letterSpacing: -0.7, marginTop: 3 },
   headingGlove: { fontSize: 32, lineHeight: 38 },
@@ -229,6 +239,7 @@ const styles = StyleSheet.create({
   },
   exportButtonGlove: { minHeight: 58, paddingHorizontal: 16 },
   exportIcon: { color: COLORS.teal, fontSize: 19, lineHeight: 18, fontWeight: '900' },
+  mapIcon: { color: COLORS.lime, fontSize: 19, lineHeight: 18, fontWeight: '900' },
   exportIconGlove: { fontSize: 24 },
   exportText: { color: COLORS.text, fontSize: 10, fontWeight: '800', marginTop: 2 },
   exportTextGlove: { fontSize: 13 },

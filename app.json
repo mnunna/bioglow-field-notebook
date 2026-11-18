@@ -43,6 +43,7 @@
           "locationWhenInUsePermission": "Eco Note uses your location to tag where a field finding was made."
         }
       ],
+      "react-native-maps",
       [
         "expo-image-picker",
         {

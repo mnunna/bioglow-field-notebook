@@ -31,6 +31,10 @@ backpacks are already heavy. This app runs on the phone they already carry:
   after a research ZIP is saved or sent, the user can confirm moving those notes to
   Archive. Editing does not change that status, and the observations and their media
   remain on the device.
+- **Observation Map** — plots usable GPS coordinates from History and Archive on one
+  embedded native map, with category-coloured markers, a selected-note card, a
+  large Fit All control, and an accessible companion list. Notes without GPS remain
+  safe in their original lists.
 - One-tap **sample data** adds six labeled observations, two synthetic photos, and
   a sample voice note for repeatable testing; it can be reset or removed without
   changing real field notes.
@@ -50,6 +54,7 @@ App.tsx                     Native stack, bottom tabs, export/archive flow, and 
 src/types.ts                Entry, template and notebook types
 src/templates.ts            All 6 templates (guided fields) and 4 notebook definitions
 src/entryModel.ts           Persisted-entry schema and migration
+src/observationMap.ts       Valid-coordinate selection for the Observation Map
 src/storage.ts              Awaited, serialized AsyncStorage load/save
 src/media.ts                Durable photo/audio files and cleanup
 src/export.ts               Spreadsheet and Darwin Core-compatible CSV builders
@@ -63,6 +68,7 @@ src/screens/CaptureScreen.tsx     Icon-led picker for all six observation templa
 src/screens/EntryFormScreen.tsx   Guided form: GPS, photo, voice recording
 src/screens/NotebookScreen.tsx    Date-grouped archive, search, filters, star, export
 src/screens/EntryDetailScreen.tsx Full entry view, star, delete
+src/screens/ObservationMapScreen.tsx Embedded map, marker selection, and companion list
 src/screens/MoreScreen.tsx        Help, trivia, and feedback hub
 src/screens/InfoScreen.tsx        Offline in-app usage and privacy guide
 src/screens/TriviaScreen.tsx      Native five-question biodiversity quiz
@@ -131,6 +137,11 @@ React Native development UI.
 
 Always open `EcoNote.xcworkspace`, not the similarly named
 `.xcodeproj`, because the workspace includes the installed native dependencies.
+
+The embedded Observation Map uses Apple Maps on iOS without an additional key.
+Expo Go provides its own development map configuration on Android; a standalone
+Android release still needs its own restricted Google Maps SDK key supplied at build
+time. No map key is stored in this repository.
 
 ## Build installable apps with EAS Build
 

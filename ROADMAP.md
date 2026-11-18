@@ -17,6 +17,9 @@ Roadmap placement is not a promise or release date. Move an item into **Now** on
 
 ## Now — stabilize the working baseline
 
+- Verify the implemented [Observation Map](docs/ideas/observation-map.md) on a physical
+  iPhone and representative Android device, including marker interaction, airplane
+  mode, and Rain / Glove Mode.
 - Commit and preserve the known-good physical-iPhone build configuration.
 - Keep setup instructions reproducible from a clean checkout.
 - Verify the highest-risk field workflows on a physical iPhone: permissions, photo capture, GPS, voice notes, offline persistence, and export.
@@ -24,8 +27,7 @@ Roadmap placement is not a promise or release date. Move an item into **Now** on
 
 ## Next — approved V2 sequence
 
-1. [Observation map](docs/ideas/observation-map.md) — plot locally saved GPS observations without continuous trail tracking. Implement this first.
-2. [Offline regional species and fungi guide](docs/ideas/offline-species-guide.md) — searchable, licensed reference material without automatic identification. Queue this after the map; geography and content ownership must be decided before implementation.
+1. [Offline regional species and fungi guide](docs/ideas/offline-species-guide.md) — searchable, licensed reference material without automatic identification. Queue this after the map is device-verified; geography and content ownership must be decided before implementation.
 
 ## Unprioritized candidates
 

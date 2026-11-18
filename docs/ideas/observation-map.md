@@ -1,9 +1,9 @@
 # Idea: Offline-resilient observation map
 
-- **Status:** planned
+- **Status:** implemented; physical-device verification pending
 - **Created:** 2026-11-18
 - **Decision:** approved as the first V2 implementation
-- **Related roadmap item:** [Observation map](../../ROADMAP.md#next--approved-v2-sequence)
+- **Related roadmap item:** [Observation map](../../ROADMAP.md#now--stabilize-the-working-baseline)
 - **Priority:** 1 of 2
 
 ## Decision summary
@@ -110,7 +110,7 @@ Before full implementation, create a disposable spike that renders sample marker
 - A safe Android API-key configuration with no secret committed to the repository.
 - Compatibility with Expo prebuild and all existing persistent config plugins.
 
-`expo-maps` is the first candidate because the repository uses Expo 58. If its supported interactions cannot satisfy the iOS 17 experience, evaluate a compatible alternative rather than raising BioGlow's deployment target. Record the library decision and release-binary size delta before merging.
+`react-native-maps` was selected for the MVP because it provides the required marker interactions on the existing iOS 17 deployment target. It embeds Apple Maps on iOS and the native Google Maps view on Android. The map has no external Maps-app handoff, and existing approximate GPS capture remains unchanged for the demo-focused MVP. Physical-device release verification and the release-binary size delta remain pending.
 
 ### Offline behavior
 
@@ -197,4 +197,5 @@ Do not add offline-region downloads during this experiment.
 ## Decision record
 
 - **2026-11-18:** Approved the Observation Map as the first V2 feature. Scope is saved observation points only. Continuous trail recording, bundled speech transcription, and offline region downloads are not part of this implementation.
+- **2026-11-18:** Implemented the map-dominant Field Focus experience with `react-native-maps`, an app-owned selected-entry card, Fit All, and an accessible companion list. The MVP does not open an installed Maps app and does not change GPS acquisition behavior. Physical iPhone and Android verification remain required.
 
