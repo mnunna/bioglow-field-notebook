@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { COLORS, GlossyCard } from '../components/ui';
+import { COLORS } from '../components/ui';
 
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
@@ -57,7 +57,7 @@ export function MoreScreen({
         Learn how the field notebook works, explore biodiversity, or tell us what would make it better.
       </Text>
 
-      <GlossyCard style={styles.card}>
+      <View style={styles.card}>
         <MoreItem
           icon="information-circle-outline"
           title="Info & how to use"
@@ -84,7 +84,7 @@ export function MoreScreen({
           glove={glove}
           onPress={onSubmitFeedback}
         />
-      </GlossyCard>
+      </View>
 
       <View style={styles.offlineNote}>
         <Ionicons name="shield-checkmark-outline" size={22} color={COLORS.teal} />
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
   headingGlove: { fontSize: 32, lineHeight: 38 },
   sub: { color: COLORS.muted, fontSize: 14, marginTop: 7, lineHeight: 20, maxWidth: 560 },
   subGlove: { fontSize: 17, lineHeight: 24 },
-  card: { marginTop: 18, padding: 0 },
+  card: { marginTop: 18, overflow: 'hidden', borderRadius: 20, backgroundColor: COLORS.cardStrong, borderWidth: 1, borderColor: COLORS.cardBorder },
   item: { minHeight: 86, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, paddingVertical: 13 },
   itemGlove: { minHeight: 108, paddingVertical: 18 },
   iconPlate: { width: 48, height: 48, borderRadius: 16, alignItems: 'center', justifyContent: 'center', marginRight: 13 },
