@@ -11,10 +11,11 @@ Identity already set in `app.json`:
 
 | Item | Value |
 | --- | --- |
-| App name | BioGlow Field Notebook |
+| Home-screen name | Eco Note |
+| App Store listing name | BioGlow: Eco Note (confirm availability when creating the App Store Connect record) |
 | Expo slug | `bioglow-field-notebook` |
-| iOS bundleIdentifier | `com.satishnavudu.bioglowfieldnotebook` |
-| Android package | `com.satishnavudu.bioglowfieldnotebook` |
+| iOS bundleIdentifier | `com.mechamasters.bioglow.econote` |
+| Android package | `com.mechamasters.bioglow.econote` |
 | Version | `1.0.0` (iOS buildNumber `1`, Android versionCode `1` — EAS auto-increments production builds) |
 | Permission strings | Camera, photo library, microphone and location usage descriptions are set for iOS, and the location/image-picker plugin permission strings for Android |
 
@@ -77,7 +78,7 @@ Production → Create release.
 
 Play Console listing work:
 
-- [ ] Create the app in Play Console with package `com.satishnavudu.bioglowfieldnotebook`
+- [ ] Create the app in Play Console with package `com.mechamasters.bioglow.econote`
 - [ ] Store listing: title (≤30 chars), short description (≤80), full description,
       app icon 512×512, feature graphic 1024×500, at least 2 phone screenshots
       (capture from the real app — Home, BioGlow form, Notebook)
@@ -111,12 +112,17 @@ to the app version page.
 App Store Connect listing work:
 
 - [ ] Create the app in App Store Connect with bundle ID
-      `com.satishnavudu.bioglowfieldnotebook`
+      `com.mechamasters.bioglow.econote`
+- [ ] Review and paste the prepared listing and private reviewer instructions from
+      `docs/store/app-store-copy.md`
 - [ ] Listing: name (≤30 chars), subtitle, description, keywords, support URL
-- [ ] Screenshots: at minimum 6.7" iPhone set (1290×2796) captured from the real app;
-      add 6.5" set if required at submission time
+      (`https://bioglow-discovery.vercel.app/support`)
+- [ ] Screenshots: at least one current Dynamic Island iPhone screenshot, plus at
+      least one 13-inch iPad screenshot while `supportsTablet` remains enabled.
+      Capture the actual required sizes shown by App Store Connect at submission time.
 - [ ] App icon 1024×1024 (already supplied by the build from `assets/icon.png`)
-- [ ] Privacy policy URL (public web page — see §3) and App Privacy questionnaire:
+- [ ] Privacy policy URL (`https://bioglow-discovery.vercel.app/privacy` — see §3)
+      and App Privacy questionnaire:
       **Data Not Collected** (location/photos/audio are used on-device only and never
       leave the phone — answer consistently with this)
 - [ ] Age rating questionnaire; export compliance is pre-answered
@@ -149,6 +155,12 @@ both stores' privacy forms **before** shipping that version.
 
 - [ ] Production `.aab` installed via Play internal/closed testing on a real Android phone
 - [ ] Production `.ipa` installed via TestFlight on a real iPhone
+- [ ] Simulator layout and navigation pass on iOS 17, iOS 18, iOS 26, and iOS 27,
+      covering a compact iPhone, a current standard iPhone, a Pro Max-size iPhone,
+      and a 13-inch iPad. The app's deployment target is iOS 17.0.
+- [ ] Physical iPhone and iPad pass on the latest installed OS. Simulators cover the
+      wider OS/screen matrix; physical devices cover camera, GPS, microphone, photo
+      library, playback, filesystem persistence, sharing, and permission prompts.
 - [ ] Fresh-install test: first entry saved with all permissions **denied** still works
       (typed location fallback), and with permissions **granted** (GPS/photo/voice)
 - [ ] Listing screenshots/descriptions match the shipped glossy design

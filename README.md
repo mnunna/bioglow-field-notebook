@@ -40,7 +40,7 @@ backpacks are already heavy. This app runs on the phone they already carry:
   changing real field notes.
 - **Rain / Glove Mode** — bigger buttons and text for wet hands
 - **More tab** — an offline how-to guide, a five-question biodiversity trivia round,
-  and a direct feedback action
+  direct feedback, and public privacy-policy and support links
 - Modern **Journal Stream** layout: a day-based observation timeline, dedicated
   icon-led New Note screen, searchable date-grouped archive, and glossy category
   colours that remain legible outdoors
@@ -181,9 +181,10 @@ Publishing itself can only be done by the account owner:
   test with at least 12 testers opted in for 14 continuous days** before Google
   grants production access.
 - Both stores need a listing (screenshots, description, content rating / privacy
-  questionnaires) and a **public privacy policy URL**. This app collects nothing and
-  sends nothing off the device — say exactly that in the policy and the store
-  privacy forms, and keep it true.
+  questionnaires) and a **public privacy policy URL**. The app does not automatically
+  collect or transmit field data. A user can explicitly export or share an archive,
+  or open their email app to send feedback; describe those user-controlled actions
+  accurately in the policy and store privacy forms.
 
 Full step-by-step: see **STORE_SUBMISSION.md**.
 

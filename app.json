@@ -5,7 +5,7 @@
         "backgroundColor": "#06231a",
         "foregroundImage": "./assets/adaptive-icon.png"
       },
-      "package": "com.satishnavudu.bioglowfieldnotebook",
+      "package": "com.mechamasters.bioglow.econote",
       "permissions": [
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION",
@@ -23,7 +23,7 @@
     "owner": "mechamasters-team",
     "icon": "./assets/icon.png",
     "ios": {
-      "bundleIdentifier": "com.satishnavudu.bioglowfieldnotebook",
+      "bundleIdentifier": "com.mechamasters.bioglow.econote",
       "infoPlist": {
         "NSCameraUsageDescription": "Eco Note uses the camera to photograph field findings.",
         "NSLocationWhenInUseUsageDescription": "Eco Note uses your location to tag where a field finding was made.",

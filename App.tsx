@@ -56,6 +56,8 @@ type RootStackParamList = {
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const navigationRef = createNavigationContainerRef<RootStackParamList>();
+const PRIVACY_POLICY_URL = 'https://bioglow-discovery.vercel.app/privacy';
+const SUPPORT_URL = 'https://bioglow-discovery.vercel.app/support';
 
 const TABS: {
   key: TabKey;
@@ -423,6 +425,17 @@ export default function App() {
     }
   }, []);
 
+  const openExternalPage = useCallback(async (url: string, pageName: string) => {
+    try {
+      await Linking.openURL(url);
+    } catch {
+      Alert.alert(
+        `${pageName} unavailable`,
+        'Check your internet connection, then try again.',
+      );
+    }
+  }, []);
+
   return (
     <>
       <StatusBar style="light" />
@@ -482,6 +495,8 @@ export default function App() {
                         onOpenInfo={() => navigation.navigate('Info')}
                         onOpenTrivia={() => navigation.navigate('Trivia')}
                         onSubmitFeedback={submitFeedback}
+                        onOpenPrivacyPolicy={() => openExternalPage(PRIVACY_POLICY_URL, 'Privacy policy')}
+                        onOpenSupport={() => openExternalPage(SUPPORT_URL, 'Support page')}
                       />
                     )}
                   </View>

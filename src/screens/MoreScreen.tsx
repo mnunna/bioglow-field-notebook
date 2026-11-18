@@ -43,11 +43,15 @@ export function MoreScreen({
   onOpenInfo,
   onOpenTrivia,
   onSubmitFeedback,
+  onOpenPrivacyPolicy,
+  onOpenSupport,
 }: {
   glove: boolean;
   onOpenInfo: () => void;
   onOpenTrivia: () => void;
   onSubmitFeedback: () => void;
+  onOpenPrivacyPolicy: () => void;
+  onOpenSupport: () => void;
 }) {
   return (
     <ScrollView contentContainerStyle={styles.wrap}>
@@ -83,6 +87,24 @@ export function MoreScreen({
           accent={COLORS.teal}
           glove={glove}
           onPress={onSubmitFeedback}
+        />
+        <View style={styles.divider} />
+        <MoreItem
+          icon="shield-checkmark-outline"
+          title="Privacy policy"
+          description="Read how Eco Note keeps observations and media private by default."
+          accent={COLORS.blue}
+          glove={glove}
+          onPress={onOpenPrivacyPolicy}
+        />
+        <View style={styles.divider} />
+        <MoreItem
+          icon="help-buoy-outline"
+          title="Support"
+          description="Get help or contact Mecha Masters about Eco Note."
+          accent={COLORS.lime}
+          glove={glove}
+          onPress={onOpenSupport}
         />
       </View>
 
