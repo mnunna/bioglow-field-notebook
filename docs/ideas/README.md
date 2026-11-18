@@ -12,6 +12,13 @@ Use this folder for product questions that are worth exploring but are not yet a
 
 Suggested statuses are `seed`, `exploring`, `validated`, `planned`, `rejected`, and `shipped`.
 
+## Active V2 specifications
+
+1. [Offline-resilient observation map](observation-map.md) — planned; implement first.
+2. [Offline regional species and fungi guide](offline-species-guide.md) — planned; queued after the map and gated on content decisions.
+
+Other ideas are unprioritized unless they are promoted in `ROADMAP.md`.
+
 ## Good exploration prompts
 
 ```text

@@ -22,14 +22,17 @@ Roadmap placement is not a promise or release date. Move an item into **Now** on
 - Verify the highest-risk field workflows on a physical iPhone: permissions, photo capture, GPS, voice notes, offline persistence, and export.
 - Replace placeholder icon and splash artwork before public distribution.
 
-## Next — candidate improvements
+## Next — approved V2 sequence
 
-These are candidates, not approved implementation tasks. Explore each in `docs/ideas/` and rank it by field value, effort, data risk, and offline reliability.
+1. [Observation map](docs/ideas/observation-map.md) — plot locally saved GPS observations without continuous trail tracking. Implement this first.
+2. [Offline regional species and fungi guide](docs/ideas/offline-species-guide.md) — searchable, licensed reference material without automatic identification. Queue this after the map; geography and content ownership must be decided before implementation.
+
+## Unprioritized candidates
+
+These remain possible ideas, not approved implementation tasks:
 
 - Backup and restore that does not compromise the offline-first privacy model.
 - Faster quick capture with less typing.
-- A map of observations using saved GPS coordinates.
-- Offline species and fungi reference material.
 - On-device speech-to-text for voice notes.
 - Reminders to revisit a site after dark or after rain.
 - A polished expedition report format beyond the shipped CSV and research ZIP exports.
