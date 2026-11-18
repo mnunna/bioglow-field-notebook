@@ -1,0 +1,465 @@
+{
+  "levels": [
+    { "id": "what-is-biodiversity", "name": "What Is Biodiversity?" },
+    { "id": "hidden-connections", "name": "Hidden Connections" },
+    { "id": "ecosystems-under-pressure", "name": "Ecosystems Under Pressure" },
+    { "id": "why-diversity-matters", "name": "Why Diversity Matters" },
+    { "id": "what-can-we-do", "name": "What Can We Do?" }
+  ],
+  "questions": [
+    {
+      "id": "what-is-biodiversity-001",
+      "level": "what-is-biodiversity",
+      "question": "Which of these best describes what biodiversity actually means?",
+      "options": [
+        { "id": "A", "text": "Only rare or endangered species" },
+        { "id": "B", "text": "The variety of genes, species, and ecosystems on Earth" },
+        { "id": "C", "text": "The total number of animals living in the wild" },
+        { "id": "D", "text": "How many national parks a country has" }
+      ],
+      "correctAnswer": "B",
+      "correctMessage": "Exactly! Biodiversity covers genes, species, and ecosystems — not just rare animals.",
+      "incorrectMessage": "Not quite — biodiversity is much bigger than endangered species alone.",
+      "ahaMessage": "Biodiversity includes the variety of genes within a species, the variety of species themselves, and the variety of ecosystems they live in. Even a backyard ant colony is part of biodiversity!",
+      "connection": "Genes → Species → Ecosystems → Biodiversity",
+      "difficulty": "easy",
+      "tags": ["definition", "biodiversity-basics"]
+    },
+    {
+      "id": "what-is-biodiversity-002",
+      "level": "what-is-biodiversity",
+      "question": "A lawn has thousands of grass plants, all the same species. A small meadow has fewer total plants, but many different kinds. Which has more biodiversity?",
+      "options": [
+        { "id": "A", "text": "The lawn, because it has more plants overall" },
+        { "id": "B", "text": "The meadow, because it has more different species" },
+        { "id": "C", "text": "They are equal, since both have plants" },
+        { "id": "D", "text": "Neither has any biodiversity" }
+      ],
+      "correctAnswer": "B",
+      "correctMessage": "Exactly! A meadow usually supports a greater variety of life.",
+      "incorrectMessage": "Not quite. Having lots of individual plants doesn't necessarily mean there is lots of biodiversity.",
+      "ahaMessage": "A lawn may contain thousands of grass plants but only a few species. A meadow can contain grasses, flowers, insects, birds, fungi and many more interacting organisms.",
+      "connection": "Plant diversity → Insects → Birds → Food web",
+      "difficulty": "medium",
+      "tags": ["species-richness", "misconception"]
+    },
+    {
+      "id": "what-is-biodiversity-003",
+      "level": "what-is-biodiversity",
+      "question": "Do microorganisms like bacteria and fungi count as important biodiversity?",
+      "options": [
+        { "id": "A", "text": "No, they're too small to matter" },
+        { "id": "B", "text": "Yes — they recycle nutrients and support nearly every ecosystem" },
+        { "id": "C", "text": "Only if they cause disease" },
+        { "id": "D", "text": "Only bacteria count, not fungi" }
+      ],
+      "correctAnswer": "B",
+      "correctMessage": "Right! Microorganisms are essential, even though they're invisible to us.",
+      "incorrectMessage": "Actually, microorganisms are some of the most important living things on the planet.",
+      "ahaMessage": "Bacteria and fungi break down dead material and recycle nutrients back into the soil. Without them, forests couldn't grow, and dead plants and animals would never decompose.",
+      "connection": "Dead leaves → Fungi & bacteria → Nutrients → New plant growth",
+      "difficulty": "medium",
+      "tags": ["microorganisms", "decomposers"]
+    },
+    {
+      "id": "what-is-biodiversity-004",
+      "level": "what-is-biodiversity",
+      "question": "Why does genetic diversity within a single species matter?",
+      "options": [
+        { "id": "A", "text": "It doesn't — all members of a species are identical" },
+        { "id": "B", "text": "It helps a species survive disease and changing conditions" },
+        { "id": "C", "text": "It only matters for pets and farm animals" },
+        { "id": "D", "text": "It just makes animals look different in zoos" }
+      ],
+      "correctAnswer": "B",
+      "correctMessage": "Yes! Genetic variety helps populations adapt and survive.",
+      "incorrectMessage": "Not quite — genetic variety within a species is surprisingly important.",
+      "ahaMessage": "If every individual in a species were genetically identical, a single disease or environmental change could wipe out the whole population. Genetic diversity gives some individuals a better chance of surviving new threats.",
+      "connection": "Genetic variety → Disease resistance → Population survival",
+      "difficulty": "challenging",
+      "tags": ["genetic-diversity"]
+    },
+    {
+      "id": "what-is-biodiversity-005",
+      "level": "what-is-biodiversity",
+      "question": "Which ecosystem is generally the most biodiverse on Earth?",
+      "options": [
+        { "id": "A", "text": "Deserts" },
+        { "id": "B", "text": "Tropical rainforests" },
+        { "id": "C", "text": "Open oceans" },
+        { "id": "D", "text": "City parks" }
+      ],
+      "correctAnswer": "B",
+      "correctMessage": "Correct! Tropical rainforests hold an extraordinary share of Earth's species.",
+      "incorrectMessage": "Not quite — tropical rainforests are typically the champions of biodiversity.",
+      "ahaMessage": "Rainforests cover a small fraction of Earth's land but are home to more than half of the world's known plant and animal species, thanks to their stable warm climate and countless microhabitats.",
+      "connection": "Warm, stable climate → Many microhabitats → High species richness",
+      "difficulty": "easy",
+      "tags": ["rainforest", "species-richness"]
+    },
+    {
+      "id": "hidden-connections-001",
+      "level": "hidden-connections",
+      "question": "If bees disappeared, would only flowers be affected?",
+      "options": [
+        { "id": "A", "text": "Yes, mostly flowers" },
+        { "id": "B", "text": "No, effects could spread through the ecosystem" },
+        { "id": "C", "text": "Only farmers would notice" },
+        { "id": "D", "text": "Almost nothing would change" }
+      ],
+      "correctAnswer": "B",
+      "correctMessage": "Exactly! Pollinators are connected to much more than flowers.",
+      "incorrectMessage": "Not quite. Pollinators affect far more than the flowers they visit.",
+      "ahaMessage": "Many plants depend on animal pollination. Those plants can provide fruits, seeds and habitat for other animals — and many crops humans eat also depend on pollination.",
+      "connection": "Pollinators → Plants → Food → Wildlife → People",
+      "difficulty": "easy",
+      "tags": ["pollination", "food-web", "ecosystem-connections"],
+      "funFact": "Bees aren't the only pollinators. Flies, beetles, butterflies, birds and bats can pollinate plants too.",
+      "actionTip": "Planting native flowering plants can provide food for local pollinators."
+    },
+    {
+      "id": "hidden-connections-002",
+      "level": "hidden-connections",
+      "question": "Sea otters eat sea urchins, which eat kelp. If sea otters disappeared from a coastal ecosystem, what would likely happen?",
+      "options": [
+        { "id": "A", "text": "Nothing would change" },
+        { "id": "B", "text": "Sea urchins would increase and destroy the kelp forest" },
+        { "id": "C", "text": "Kelp would grow even faster" },
+        { "id": "D", "text": "Sea urchins would also disappear" }
+      ],
+      "correctAnswer": "B",
+      "correctMessage": "Exactly! Removing sea otters lets urchins overgraze the kelp forest.",
+      "incorrectMessage": "Not quite — losing a keystone species like the sea otter can trigger a chain reaction.",
+      "ahaMessage": "Sea otters are a 'keystone species.' Without them, sea urchin populations explode and can devour entire kelp forests, destroying habitat for countless other species.",
+      "connection": "Sea otters → Sea urchins → Kelp forest → Coastal ecosystem",
+      "difficulty": "medium",
+      "tags": ["keystone-species", "food-web"]
+    },
+    {
+      "id": "hidden-connections-003",
+      "level": "hidden-connections",
+      "question": "When wolves were reintroduced to Yellowstone National Park, what happened to the ecosystem?",
+      "options": [
+        { "id": "A", "text": "Nothing changed" },
+        { "id": "B", "text": "Deer and elk populations grew completely out of control" },
+        { "id": "C", "text": "Overgrazing decreased, and vegetation, rivers, and other wildlife recovered" },
+        { "id": "D", "text": "All the elk disappeared immediately" }
+      ],
+      "correctAnswer": "C",
+      "correctMessage": "Yes! Wolves helped the whole ecosystem recover, not just deer numbers.",
+      "incorrectMessage": "Not quite — predators like wolves can actually help an ecosystem recover.",
+      "ahaMessage": "By controlling elk numbers and movement, wolves allowed overgrazed plants along riverbanks to recover. That brought back beavers, songbirds, and even changed how rivers flowed. Predators aren't 'bad' — they help keep ecosystems balanced.",
+      "connection": "Wolves → Elk behavior → Riverside vegetation → Rivers & other wildlife",
+      "difficulty": "challenging",
+      "tags": ["predators", "trophic-cascade"]
+    },
+    {
+      "id": "hidden-connections-004",
+      "level": "hidden-connections",
+      "question": "Can trees in a forest 'communicate' or share resources with each other?",
+      "options": [
+        { "id": "A", "text": "No, trees are completely independent" },
+        { "id": "B", "text": "Yes, through underground fungal networks connected to their roots" },
+        { "id": "C", "text": "Only if they are the exact same species" },
+        { "id": "D", "text": "Only through their leaves touching" }
+      ],
+      "correctAnswer": "B",
+      "correctMessage": "Right! Fungal networks link trees together underground.",
+      "incorrectMessage": "Actually, trees are more connected than they look.",
+      "ahaMessage": "Thread-like fungi called mycorrhizae connect to tree roots and link separate trees into an underground network. Trees can share nutrients and even send chemical warning signals through this network.",
+      "connection": "Tree roots → Mycorrhizal fungi → Neighboring trees → Forest network",
+      "difficulty": "challenging",
+      "tags": ["fungi", "mycorrhizae", "forest-network"]
+    },
+    {
+      "id": "hidden-connections-005",
+      "level": "hidden-connections",
+      "question": "Many rainforest trees rely on animals like birds and monkeys to reproduce. Why?",
+      "options": [
+        { "id": "A", "text": "Animals water the trees" },
+        { "id": "B", "text": "Animals eat fruit and disperse the seeds to new locations" },
+        { "id": "C", "text": "Animals pollinate every tree with their fur" },
+        { "id": "D", "text": "Trees don't actually need animals at all" }
+      ],
+      "correctAnswer": "B",
+      "correctMessage": "Exactly! Animals carry seeds far from the parent tree.",
+      "incorrectMessage": "Not quite — many trees actually depend on animals to spread their seeds.",
+      "ahaMessage": "When animals eat fruit, the seeds often pass through their digestive system and get deposited somewhere new, sometimes miles away, helping trees colonize new areas and maintain genetic diversity.",
+      "connection": "Fruiting tree → Animal eats fruit → Seed dispersal → New tree growth",
+      "difficulty": "easy",
+      "tags": ["seed-dispersal"]
+    },
+    {
+      "id": "ecosystems-under-pressure-001",
+      "level": "ecosystems-under-pressure",
+      "question": "Is every introduced (non-native) species automatically an 'invasive species'?",
+      "options": [
+        { "id": "A", "text": "Yes, they're the same thing" },
+        { "id": "B", "text": "No — invasive species are introduced species that cause ecological or economic harm" },
+        { "id": "C", "text": "No — invasive species are always native species" },
+        { "id": "D", "text": "Only insects can be invasive" }
+      ],
+      "correctAnswer": "B",
+      "correctMessage": "Right! 'Introduced' and 'invasive' aren't the same thing.",
+      "incorrectMessage": "Not quite — many introduced species cause no harm at all.",
+      "ahaMessage": "A species is 'introduced' simply if humans moved it somewhere new. It only becomes 'invasive' if it spreads aggressively and harms native species, habitats, or the economy. Many introduced species live harmlessly alongside natives.",
+      "connection": "Introduced species → Spreads & outcompetes natives → Ecological harm → Invasive species",
+      "difficulty": "medium",
+      "tags": ["invasive-species", "terminology"]
+    },
+    {
+      "id": "ecosystems-under-pressure-002",
+      "level": "ecosystems-under-pressure",
+      "question": "A large forest is cut into several small, disconnected patches by roads and farmland. What's the biggest risk to wildlife?",
+      "options": [
+        { "id": "A", "text": "Animals get more sunlight" },
+        { "id": "B", "text": "Populations become isolated and can't reach mates or resources in other patches" },
+        { "id": "C", "text": "The forest becomes more biodiverse" },
+        { "id": "D", "text": "Nothing changes for wildlife" }
+      ],
+      "correctAnswer": "B",
+      "correctMessage": "Exactly! Fragmentation isolates populations from each other.",
+      "incorrectMessage": "Not quite — breaking up habitat into small pieces causes serious problems.",
+      "ahaMessage": "When habitat is fragmented, animals can become trapped in small patches, unable to reach mates, food, or new territory in other patches. This can shrink genetic diversity and increase local extinction risk.",
+      "connection": "Habitat fragmentation → Isolated populations → Reduced genetic diversity → Extinction risk",
+      "difficulty": "medium",
+      "tags": ["habitat-fragmentation"]
+    },
+    {
+      "id": "ecosystems-under-pressure-003",
+      "level": "ecosystems-under-pressure",
+      "question": "As temperatures rise, some flowers are blooming earlier in spring than before. Why could this be a problem?",
+      "options": [
+        { "id": "A", "text": "It isn't a problem at all" },
+        { "id": "B", "text": "Pollinators that rely on those flowers may not have emerged yet, missing the food source" },
+        { "id": "C", "text": "Flowers only bloom in summer anyway" },
+        { "id": "D", "text": "Bees prefer late-blooming flowers" }
+      ],
+      "correctAnswer": "B",
+      "correctMessage": "Yes! Timing mismatches between species can disrupt whole relationships.",
+      "incorrectMessage": "Not quite — small timing shifts can actually break important relationships.",
+      "ahaMessage": "Many species have evolved to rely on precise timing with each other. If flowers bloom before their pollinators are active, both species can suffer — the flowers go unpollinated and the pollinators lose a food source.",
+      "connection": "Warmer climate → Earlier blooming → Pollinator mismatch → Fewer seeds & less pollinator food",
+      "difficulty": "challenging",
+      "tags": ["climate-change", "phenology"]
+    },
+    {
+      "id": "ecosystems-under-pressure-004",
+      "level": "ecosystems-under-pressure",
+      "question": "If a top predator fish is overfished from a coral reef, what commonly happens next?",
+      "options": [
+        { "id": "A", "text": "Nothing — reefs don't need predators" },
+        { "id": "B", "text": "The balance of smaller reef fish can shift, sometimes letting algae overgrow the coral" },
+        { "id": "C", "text": "The reef automatically grows more colorful" },
+        { "id": "D", "text": "Coral grows faster without predators" }
+      ],
+      "correctAnswer": "B",
+      "correctMessage": "Right! Removing predators can unbalance the whole reef food web.",
+      "incorrectMessage": "Not quite — losing a top predator can set off a chain reaction on the reef.",
+      "ahaMessage": "Removing top predators can change mid-level fish populations unpredictably, sometimes leading to fewer algae-eating fish and allowing algae to smother coral, harming the whole reef ecosystem.",
+      "connection": "Overfishing predators → Food web imbalance → Algae overgrowth → Coral decline",
+      "difficulty": "challenging",
+      "tags": ["overfishing", "coral-reef", "food-web"]
+    },
+    {
+      "id": "ecosystems-under-pressure-005",
+      "level": "ecosystems-under-pressure",
+      "question": "A farmer sprays a pesticide to kill crop-eating insects. Why might this also harm bees and butterflies?",
+      "options": [
+        { "id": "A", "text": "It can't — pesticides only affect the target insect" },
+        { "id": "B", "text": "Pesticides often affect many insect species, not just the intended pest" },
+        { "id": "C", "text": "Bees are immune to all chemicals" },
+        { "id": "D", "text": "Butterflies don't interact with crops at all" }
+      ],
+      "correctAnswer": "B",
+      "correctMessage": "Exactly! Pesticides often aren't selective enough.",
+      "incorrectMessage": "Not quite — pesticides frequently affect far more than their intended target.",
+      "ahaMessage": "Many pesticides affect a broad range of insects, including helpful pollinators like bees and butterflies that aren't the intended target, which can reduce pollination for nearby plants and crops.",
+      "connection": "Pesticide use → Non-target insect harm → Fewer pollinators → Reduced crop pollination",
+      "difficulty": "medium",
+      "tags": ["pesticides", "pollinators"]
+    },
+    {
+      "id": "why-diversity-matters-001",
+      "level": "why-diversity-matters",
+      "question": "Does biodiversity only matter in places like rainforests and coral reefs?",
+      "options": [
+        { "id": "A", "text": "Yes, other places don't really need it" },
+        { "id": "B", "text": "No — biodiversity supports ecosystems everywhere, including farms, cities, and backyards" },
+        { "id": "C", "text": "Only oceans need biodiversity" },
+        { "id": "D", "text": "Only places with endangered species need it" }
+      ],
+      "correctAnswer": "B",
+      "correctMessage": "Right! Every ecosystem benefits from biodiversity, not just famous ones.",
+      "incorrectMessage": "Not quite — biodiversity matters everywhere, even in your backyard.",
+      "ahaMessage": "Biodiversity supports pollination, pest control, clean water, and healthy soil everywhere — from city parks to farmland to your own backyard garden, not only in rainforests or reefs.",
+      "connection": "Local biodiversity → Pollination & pest control → Healthy soil & water → Everyday life",
+      "difficulty": "easy",
+      "tags": ["biodiversity-value"]
+    },
+    {
+      "id": "why-diversity-matters-002",
+      "level": "why-diversity-matters",
+      "question": "Why do farmers benefit from planting several different crop varieties instead of just one?",
+      "options": [
+        { "id": "A", "text": "It looks nicer" },
+        { "id": "B", "text": "If disease or pests hit one variety, others may survive, protecting the harvest" },
+        { "id": "C", "text": "It has no real benefit" },
+        { "id": "D", "text": "It only affects taste" }
+      ],
+      "correctAnswer": "B",
+      "correctMessage": "Exactly! Diversity acts like insurance against crop failure.",
+      "incorrectMessage": "Not quite — crop diversity is actually a safeguard against disaster.",
+      "ahaMessage": "Growing many crop varieties reduces the risk that one disease or pest wipes out an entire harvest. The Irish Potato Famine happened partly because farmers relied on very few potato varieties.",
+      "connection": "Crop diversity → Disease resistance → Food security",
+      "difficulty": "medium",
+      "tags": ["food-security", "agriculture"]
+    },
+    {
+      "id": "why-diversity-matters-003",
+      "level": "why-diversity-matters",
+      "question": "Why do scientists care about protecting rainforest plants that haven't been studied yet?",
+      "options": [
+        { "id": "A", "text": "They never provide anything useful" },
+        { "id": "B", "text": "Many existing medicines came from wild plants, and unstudied species could hold future treatments" },
+        { "id": "C", "text": "Only animals can provide medicine" },
+        { "id": "D", "text": "Plants can't be used for medicine" }
+      ],
+      "correctAnswer": "B",
+      "correctMessage": "Yes! Many medicines already come from wild biodiversity.",
+      "incorrectMessage": "Not quite — wild plants have already given us many important medicines.",
+      "ahaMessage": "Medicines like aspirin (originally from willow bark) and treatments for cancer and malaria trace back to compounds found in wild plants. Losing species before we study them could mean losing undiscovered cures.",
+      "connection": "Wild plant → Chemical compound → Medical research → New medicine",
+      "difficulty": "medium",
+      "tags": ["medicine", "bioprospecting"]
+    },
+    {
+      "id": "why-diversity-matters-004",
+      "level": "why-diversity-matters",
+      "question": "Besides food and medicine, what's another major benefit healthy ecosystems provide?",
+      "options": [
+        { "id": "A", "text": "They provide no benefits beyond scenery" },
+        { "id": "B", "text": "They filter water, regulate climate, and reduce flooding and erosion" },
+        { "id": "C", "text": "They only matter for tourism" },
+        { "id": "D", "text": "They only benefit wild animals" }
+      ],
+      "correctAnswer": "B",
+      "correctMessage": "Exactly! Ecosystems provide services we depend on every day.",
+      "incorrectMessage": "Not quite — healthy ecosystems do far more than just look nice.",
+      "ahaMessage": "Wetlands filter pollutants from water, forests help regulate rainfall and temperature, and healthy soil and plant roots reduce flooding and erosion. These 'ecosystem services' are worth trillions of dollars but are easy to take for granted.",
+      "connection": "Healthy ecosystem → Water filtration & climate regulation → Human wellbeing",
+      "difficulty": "medium",
+      "tags": ["ecosystem-services"]
+    },
+    {
+      "id": "why-diversity-matters-005",
+      "level": "why-diversity-matters",
+      "question": "Why are more diverse ecosystems generally more resilient to disturbances like storms or droughts?",
+      "options": [
+        { "id": "A", "text": "Diversity has no effect on resilience" },
+        { "id": "B", "text": "Different species respond differently to stress, so some can keep key functions going even if others struggle" },
+        { "id": "C", "text": "Diverse ecosystems are actually more fragile" },
+        { "id": "D", "text": "Resilience depends only on how big an ecosystem is" }
+      ],
+      "correctAnswer": "B",
+      "correctMessage": "Right! Diversity spreads out the risk.",
+      "incorrectMessage": "Not quite — diversity is actually a major source of ecosystem resilience.",
+      "ahaMessage": "When an ecosystem has many species playing similar roles, it's less likely that a single disturbance — like a drought or disease — will collapse the whole system, because different species can respond differently and keep essential functions going.",
+      "connection": "Species diversity → Varied responses to stress → Ecosystem resilience",
+      "difficulty": "challenging",
+      "tags": ["resilience", "ecosystem-stability"]
+    },
+    {
+      "id": "what-can-we-do-001",
+      "level": "what-can-we-do",
+      "question": "Are humans separate from the ecosystems around us?",
+      "options": [
+        { "id": "A", "text": "Yes, humans exist outside of nature" },
+        { "id": "B", "text": "No — humans are part of ecosystems, and we depend on and affect them too" },
+        { "id": "C", "text": "Only people in rural areas are part of ecosystems" },
+        { "id": "D", "text": "Only farmers interact with ecosystems" }
+      ],
+      "correctAnswer": "B",
+      "correctMessage": "Exactly! Humans are woven into ecosystems, not separate from them.",
+      "incorrectMessage": "Not quite — humans are very much part of the ecosystems around us.",
+      "ahaMessage": "Humans rely on clean air, water, food, and materials that come from ecosystems, and our actions — from farming to building cities — shape those ecosystems in return. We're part of the web, not outside observers.",
+      "connection": "Human actions → Ecosystem changes → Ecosystem services → Human wellbeing",
+      "difficulty": "easy",
+      "tags": ["humans-and-nature"]
+    },
+    {
+      "id": "what-can-we-do-002",
+      "level": "what-can-we-do",
+      "question": "What's one simple action that can help local pollinators, even in a small yard?",
+      "options": [
+        { "id": "A", "text": "Mowing all grass very short" },
+        { "id": "B", "text": "Planting native flowering plants" },
+        { "id": "C", "text": "Using more pesticide" },
+        { "id": "D", "text": "Removing all plants" }
+      ],
+      "correctAnswer": "B",
+      "correctMessage": "Yes! Native plants provide food pollinators are adapted to use.",
+      "incorrectMessage": "Not quite — some small choices help pollinators much more than others.",
+      "ahaMessage": "Native flowering plants provide nectar and pollen that local bees, butterflies, and other pollinators are adapted to use, giving them food sources even in small urban or suburban spaces.",
+      "connection": "Native plants → Pollinator food source → Healthier pollinator populations",
+      "difficulty": "easy",
+      "tags": ["action", "pollinators"],
+      "actionTip": "Planting native flowering plants can provide food for local pollinators."
+    },
+    {
+      "id": "what-can-we-do-003",
+      "level": "what-can-we-do",
+      "question": "How does reducing food waste at home help biodiversity?",
+      "options": [
+        { "id": "A", "text": "It doesn't connect to biodiversity at all" },
+        { "id": "B", "text": "Less wasted food means less farmland needs to be cleared to grow replacement food" },
+        { "id": "C", "text": "Food waste helps soil more than crops do" },
+        { "id": "D", "text": "It only affects landfill space" }
+      ],
+      "correctAnswer": "B",
+      "correctMessage": "Right! Less waste can mean less pressure to clear more land.",
+      "incorrectMessage": "Not quite — food waste is more connected to biodiversity than it seems.",
+      "ahaMessage": "Growing food requires land, water, and often clearing natural habitat. When we waste less food, we reduce the demand to convert more wild land into farmland, protecting habitat for other species.",
+      "connection": "Less food waste → Less demand for new farmland → Less habitat loss",
+      "difficulty": "medium",
+      "tags": ["food-waste", "land-use"]
+    },
+    {
+      "id": "what-can-we-do-004",
+      "level": "what-can-we-do",
+      "question": "How can an everyday person contribute to real biodiversity research?",
+      "options": [
+        { "id": "A", "text": "Only professional scientists can contribute" },
+        { "id": "B", "text": "By recording species sightings through citizen science apps that researchers use" },
+        { "id": "C", "text": "There's no way for regular people to help" },
+        { "id": "D", "text": "Only by donating money" }
+      ],
+      "correctAnswer": "B",
+      "correctMessage": "Exactly! Citizen science turns everyday observations into real data.",
+      "incorrectMessage": "Not quite — everyday people can meaningfully contribute to research.",
+      "ahaMessage": "Apps that let people log plant and animal sightings feed real observations into scientific databases, helping researchers track species ranges, spot invasive species early, and monitor changes over time.",
+      "connection": "Public sightings → Citizen science apps → Research databases → Better conservation decisions",
+      "difficulty": "medium",
+      "tags": ["citizen-science", "action"]
+    },
+    {
+      "id": "what-can-we-do-005",
+      "level": "what-can-we-do",
+      "question": "Communities sometimes build 'wildlife corridors' — strips of natural habitat connecting separated forest patches. Why?",
+      "options": [
+        { "id": "A", "text": "They're purely decorative" },
+        { "id": "B", "text": "They let animals move safely between patches to find food, mates, and new territory" },
+        { "id": "C", "text": "They are built to keep animals out of certain areas" },
+        { "id": "D", "text": "They have no ecological purpose" }
+      ],
+      "correctAnswer": "B",
+      "correctMessage": "Right! Corridors reconnect what fragmentation separated.",
+      "incorrectMessage": "Not quite — wildlife corridors serve an important ecological purpose.",
+      "ahaMessage": "Wildlife corridors reconnect fragmented habitat, letting animals safely travel between patches to find mates, food, and new territory — helping reverse some of the harm caused by habitat fragmentation.",
+      "connection": "Fragmented habitat → Wildlife corridor → Reconnected populations → Healthier biodiversity",
+      "difficulty": "medium",
+      "tags": ["habitat-corridor", "action"],
+      "actionTip": "Support local or community efforts to protect or restore natural corridors between green spaces."
+    }
+  ]
+}

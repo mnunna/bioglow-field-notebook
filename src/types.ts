@@ -66,4 +66,4 @@ export interface FieldEntry {
   updatedAt: string; // ISO string
 }
 
-export type TabKey = 'home' | 'capture' | 'notebook' | 'ideas';
+export type TabKey = 'home' | 'capture' | 'notebook' | 'more';

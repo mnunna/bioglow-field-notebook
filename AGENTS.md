@@ -42,7 +42,7 @@ Use `npm run typecheck` as the minimum automated check. Features involving camer
 - Keep TypeScript types explicit at storage, navigation, and native-module boundaries.
 - Never commit secrets, signing material, provisioning profiles, generated native folders, build output, or local environment files.
 - Update `README.md` when setup or user-visible behavior changes.
-- `ROADMAP.md` is the planning source of truth. `src/screens/IdeasScreen.tsx` is the concise, user-facing snapshot; synchronize it deliberately when roadmap changes are ready to appear in the app.
+- `ROADMAP.md` is the developer-facing planning source of truth. Do not surface roadmap or exploratory idea content in the app's More section unless a future product decision explicitly restores it.
 - Explore uncertain ideas in `docs/ideas/` before writing implementation code. Promote an idea to the roadmap only after its problem, intended outcome, constraints, and smallest useful version are clear.
 
 ## Branching strategy

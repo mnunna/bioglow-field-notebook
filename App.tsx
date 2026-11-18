@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Alert,
+  Linking,
   Pressable,
   StyleSheet,
   Text,
@@ -33,7 +34,9 @@ import { CaptureScreen } from './src/screens/CaptureScreen';
 import { EntryFormScreen } from './src/screens/EntryFormScreen';
 import { NotebookScreen } from './src/screens/NotebookScreen';
 import { EntryDetailScreen } from './src/screens/EntryDetailScreen';
-import { IdeasScreen } from './src/screens/IdeasScreen';
+import { MoreScreen } from './src/screens/MoreScreen';
+import { InfoScreen } from './src/screens/InfoScreen';
+import { TriviaScreen } from './src/screens/TriviaScreen';
 import { COLORS } from './src/components/ui';
 import { RainGloveOverlay } from './src/components/RainGloveOverlay';
 import { templateByKey } from './src/templates';
@@ -45,6 +48,8 @@ type RootStackParamList = {
   Tabs: undefined;
   Form: { template: TemplateDef; entryId?: string };
   Detail: { entryId: string };
+  Info: undefined;
+  Trivia: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -59,7 +64,7 @@ const TABS: {
   { key: 'home', label: 'History', icon: 'time-outline', activeIcon: 'time' },
   { key: 'capture', label: 'New note', icon: 'add-circle-outline', activeIcon: 'add-circle' },
   { key: 'notebook', label: 'Archive', icon: 'archive-outline', activeIcon: 'archive' },
-  { key: 'ideas', label: 'More', icon: 'ellipsis-horizontal-circle-outline', activeIcon: 'ellipsis-horizontal-circle' },
+  { key: 'more', label: 'More', icon: 'ellipsis-horizontal-circle-outline', activeIcon: 'ellipsis-horizontal-circle' },
 ];
 
 export default function App() {
@@ -403,6 +408,19 @@ export default function App() {
     }
   }, [commitEntries, enqueueEntryMutation]);
 
+  const submitFeedback = useCallback(async () => {
+    const subject = encodeURIComponent('BioGlow app feedback');
+    const body = encodeURIComponent('What would you like us to know?\n\n');
+    try {
+      await Linking.openURL(`mailto:mahendranunna@gmail.com?subject=${subject}&body=${body}`);
+    } catch {
+      Alert.alert(
+        'Email unavailable',
+        'Set up an email app on this device, then try submitting feedback again.',
+      );
+    }
+  }, []);
+
   return (
     <>
       <StatusBar style="light" />
@@ -455,7 +473,12 @@ export default function App() {
                         onExport={shareResearchArchive}
                       />
                     ) : (
-                      <IdeasScreen />
+                      <MoreScreen
+                        glove={glove}
+                        onOpenInfo={() => navigation.navigate('Info')}
+                        onOpenTrivia={() => navigation.navigate('Trivia')}
+                        onSubmitFeedback={submitFeedback}
+                      />
                     )}
                   </View>
 
@@ -532,6 +555,24 @@ export default function App() {
                 </SafeAreaView>
               );
             }}
+          </Stack.Screen>
+          <Stack.Screen name="Info" options={{ title: 'Info & how to use' }}>
+            {() => (
+              <SafeAreaView style={styles.root} edges={['bottom']}>
+                <LinearGradient colors={[COLORS.bgDeep, COLORS.bg, COLORS.bgSoft]} style={styles.fill}>
+                  <InfoScreen glove={glove} />
+                </LinearGradient>
+              </SafeAreaView>
+            )}
+          </Stack.Screen>
+          <Stack.Screen name="Trivia" options={{ title: 'Biodiversity trivia' }}>
+            {() => (
+              <SafeAreaView style={styles.root} edges={['bottom']}>
+                <LinearGradient colors={[COLORS.bgDeep, COLORS.bg, COLORS.bgSoft]} style={styles.fill}>
+                  <TriviaScreen glove={glove} />
+                </LinearGradient>
+              </SafeAreaView>
+            )}
           </Stack.Screen>
           </Stack.Navigator>
         </NavigationContainer>

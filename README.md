@@ -35,8 +35,8 @@ backpacks are already heavy. This app runs on the phone they already carry:
   a sample voice note for repeatable testing; it can be reset or removed without
   changing real field notes.
 - **Rain / Glove Mode** — bigger buttons and text for wet hands
-- **More tab** — V1 → V2 → V3 roadmap and the alternate ideas considered
-  (voice pendant, e-ink tablet, QR tags, smartwatch)
+- **More tab** — an offline how-to guide, a five-question biodiversity trivia round,
+  and a direct feedback action
 - Modern **Journal Stream** layout: a day-based observation timeline, dedicated
   icon-led New Note screen, searchable date-grouped archive, and glossy category
   colours that remain legible outdoors
@@ -63,7 +63,11 @@ src/screens/CaptureScreen.tsx     Icon-led picker for all six observation templa
 src/screens/EntryFormScreen.tsx   Guided form: GPS, photo, voice recording
 src/screens/NotebookScreen.tsx    Date-grouped archive, search, filters, star, export
 src/screens/EntryDetailScreen.tsx Full entry view, star, delete
-src/screens/IdeasScreen.tsx       Roadmap and alternate ideas
+src/screens/MoreScreen.tsx        Help, trivia, and feedback hub
+src/screens/InfoScreen.tsx        Offline in-app usage and privacy guide
+src/screens/TriviaScreen.tsx      Native five-question biodiversity quiz
+src/trivia.ts                     Bundled trivia content model and round selection
+src/content/biodiversityQuiz.json Offline biodiversity questions and explanations
 app.json                    App identity, bundle IDs, permission usage strings
 eas.json                    EAS Build + Submit profiles (preview APK, production store)
 STORE_SUBMISSION.md         Step-by-step App Store / Play Store submission checklist
