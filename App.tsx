@@ -412,7 +412,7 @@ export default function App() {
     const subject = encodeURIComponent('BioGlow app feedback');
     const body = encodeURIComponent('What would you like us to know?\n\n');
     try {
-      await Linking.openURL(`mailto:mahendranunna@gmail.com?subject=${subject}&body=${body}`);
+      await Linking.openURL(`mailto:mecha_masters@icloud.com?subject=${subject}&body=${body}`);
     } catch {
       Alert.alert(
         'Email unavailable',
