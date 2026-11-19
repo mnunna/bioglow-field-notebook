@@ -15,12 +15,7 @@
       ],
       "versionCode": 1
     },
-    "extra": {
-      "eas": {
-        "projectId": "8a4bd76e-dba9-4505-86f5-5e39c589dbf5"
-      }
-    },
-    "owner": "mechamasters-team",
+    "owner": "mechamasters-apps",
     "icon": "./assets/icon.png",
     "ios": {
       "bundleIdentifier": "com.mechamasters.bioglow.econote",
@@ -83,6 +78,11 @@
     "scheme": "bioglow",
     "slug": "bioglow-field-notebook",
     "userInterfaceStyle": "dark",
-    "version": "1.0.0"
+    "version": "1.0.0",
+    "extra": {
+      "eas": {
+        "projectId": "a7fb317d-d3af-438b-8f42-43dc74ef7554"
+      }
+    }
   }
 }

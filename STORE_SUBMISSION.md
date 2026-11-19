@@ -14,6 +14,8 @@ Identity already set in `app.json`:
 | Home-screen name | Eco Note |
 | App Store listing name | BioGlow: Eco Note (confirm availability when creating the App Store Connect record) |
 | Expo slug | `bioglow-field-notebook` |
+| Expo organization | `mechamasters-apps` |
+| EAS project ID | `a7fb317d-d3af-438b-8f42-43dc74ef7554` |
 | iOS bundleIdentifier | `com.mechamasters.bioglow.econote` |
 | Android package | `com.mechamasters.bioglow.econote` |
 | Version | `1.0.0` (iOS buildNumber `1`, Android versionCode `1` — EAS auto-increments production builds) |
