@@ -120,9 +120,9 @@ To exercise the main workflow:
 8. Open **More** for the offline usage guide, biodiversity trivia, feedback action,
    privacy policy, and support page.
 
-The app has been tested on a physical iPhone. Before submission, replace this
-sentence with the final physical iPhone and iPad test results because the build
-supports iPad.
+The app has been tested on physical iPhone and iPad hardware. Core navigation,
+capture, browsing, and export should be rechecked in the production TestFlight
+build before submission.
 
 ## App privacy answers
 

@@ -197,5 +197,5 @@ Full step-by-step: see **STORE_SUBMISSION.md**.
 - Entries and their managed media live on one device. There is no cloud sync in V1
   (that is the point — offline first); the complete research ZIP is the explicit way
   to move data off the phone.
-- The placeholder app icon/splash in `assets/` should be replaced with final artwork
-  before a store submission.
+- Final app icon and splash artwork are present in `assets/`; keep the 1024×1024 iOS
+  icon opaque when updating the artwork.

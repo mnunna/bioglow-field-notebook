@@ -62,8 +62,8 @@ Before building:
 - [ ] `npm run typecheck` passes (`tsc --noEmit`)
 - [ ] App tested on a real phone via Expo Go / preview build (camera, GPS, microphone,
       photo picker, CSV export all exercised — test the permission-denied paths too)
-- [ ] Final icon (1024×1024, no transparency for iOS) and splash artwork replace the
-      placeholders in `assets/`
+- [x] Final icon is 1024×1024 with no transparency, and the splash artwork is in
+      `assets/`
 
 ## 2A. Submit to Google Play
 
@@ -160,7 +160,9 @@ both stores' privacy forms **before** shipping that version.
 - [ ] Simulator layout and navigation pass on iOS 17, iOS 18, iOS 26, and iOS 27,
       covering a compact iPhone, a current standard iPhone, a Pro Max-size iPhone,
       and a 13-inch iPad. The app's deployment target is iOS 17.0.
-- [ ] Physical iPhone and iPad pass on the latest installed OS. Simulators cover the
+- [x] Physical iPhone and iPad development-build pass on the latest installed OS.
+      Repeat this check with the production TestFlight build before submission.
+      Simulators cover the
       wider OS/screen matrix; physical devices cover camera, GPS, microphone, photo
       library, playback, filesystem persistence, sharing, and permission prompts.
 - [ ] Fresh-install test: first entry saved with all permissions **denied** still works
